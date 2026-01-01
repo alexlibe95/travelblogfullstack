@@ -30,6 +30,9 @@
     "logs",
     "dist",
     "release.config.js",
-    "eslint.config.mjs"
+    "eslint.config.mjs",
+    "vitest.config.ts",
+    "**/*.test.ts",
+    "**/*.spec.ts"
   ]
 }

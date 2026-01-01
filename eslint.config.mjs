@@ -5,17 +5,18 @@ import path from 'node:path';
 
 const __dirname = path.resolve();
 
-export default tseslint.config(
+export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
     files: ['**/*.ts'],
+    ignores: ['**/*.test.ts', '**/*.spec.ts', 'vitest.config.ts'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
       parser: tseslint.parser,
       parserOptions: {
-        project: ['./tsconfig.json', './spec/tsconfig.json'],
+        project: ['./tsconfig.json'],
         tsconfigRootDir: __dirname,
       },
       globals: {
@@ -43,5 +44,5 @@ export default tseslint.config(
   },
   {
     ignores: ['dist/**/*', 'logs/**/*', 'public/**/*', 'release.config.js'],
-  }
-);
+  },
+];

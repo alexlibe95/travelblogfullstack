@@ -109,6 +109,10 @@ travelblogfullstack/
 - `npm start` - Start the production server
 - `npm run dev` - Start development server with auto-reload
 - `npm run build` - Compile TypeScript to JavaScript
+- `npm test` - Run tests in watch mode
+- `npm run test:run` - Run tests once (CI mode)
+- `npm run test:ui` - Run tests with UI
+- `npm run test:coverage` - Run tests with coverage report
 - `npm run lint` - Run ESLint to check code quality
 - `npm run lint:fix` - Fix ESLint errors automatically
 - `npm run format` - Format code with Prettier

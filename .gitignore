@@ -38,5 +38,9 @@ dist
 .env*
 !.env.example
 
-# Cursor
-.cursor
+# Test coverage
+coverage/
+*.lcov
+
+# Vitest
+.vitest/
