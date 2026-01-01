@@ -46,4 +46,4 @@ coverage/
 .vitest/
 
 # Cursor
-.cursor1/
+.cursor/
