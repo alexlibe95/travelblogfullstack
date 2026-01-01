@@ -1,17 +1,16 @@
 /**
  * Island schema definition
  * Controlled via code (Schema from code – Mode A)
- * Compatible with Islands.json data structure
  */
 export const schemaDefinitions = [
   {
-    className: 'Islands',
+    className: 'Island',
     fields: {
-      title: {
+      name: {
         type: 'String',
         required: true,
       },
-      short_info: {
+      short_description: {
         type: 'String',
         required: true,
       },
@@ -23,16 +22,16 @@ export const schemaDefinitions = [
         type: 'Number',
         required: true,
       },
-      url: {
+      site: {
         type: 'String',
         required: false,
       },
       photo: {
-        type: 'String',
+        type: 'File',
         required: false,
       },
       photo_thumb: {
-        type: 'String',
+        type: 'File',
         required: false,
       },
       location: {
