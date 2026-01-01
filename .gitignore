@@ -37,3 +37,6 @@ dist
 # env files
 .env*
 !.env.example
+
+# Cursor
+.cursor

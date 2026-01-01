@@ -7,6 +7,6 @@ Parse.Cloud.define('hello', () => {
 });
 
 Parse.Cloud.define('helloAsyncFunction', async () => {
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   return 'Hi async';
 });

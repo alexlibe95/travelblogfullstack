@@ -5,7 +5,13 @@
     "moduleResolution": "Node",
     "outDir": "./dist",
     "rootDir": "./",
-    "noImplicitAny": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -13,7 +19,8 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleDetection": "force",
-    "isolatedModules": true
+    "isolatedModules": true,
+    "resolveJsonModule": true
   },
   "include": ["**/*.ts", "types/**/*.d.ts"],
   "exclude": [

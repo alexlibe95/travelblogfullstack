@@ -1,15 +1,16 @@
 import { schemaDefinitions } from './cloud/schema.js';
+import { env } from './src/utils/env.js';
 
 export const config = {
-  databaseURI: process.env.DB_URI!,
+  databaseURI: env.DB_URI,
 
   cloud: () => import('./cloud/main.js'),
 
-  appId: process.env.APP_ID!,
+  appId: env.APP_ID,
 
-  masterKey: process.env.MASTER_KEY!,
+  masterKey: env.MASTER_KEY,
 
-  serverURL: process.env.SERVER_URL!,
+  serverURL: env.SERVER_URL,
 
   schema: {
     definitions: schemaDefinitions,
@@ -18,4 +19,16 @@ export const config = {
     recreateModifiedFields: false,
     deleteExtraFields: false,
   },
+
+  // Production-ready Parse Server options
+  ...(env.NODE_ENV === 'production' && {
+    // Enable request logging in production
+    logLevel: 'info',
+    // Security: prevent master key from being exposed
+    masterKeyIps: process.env.MASTER_KEY_IPS?.split(',') || [],
+    // File upload limits
+    maxUploadSize: '5mb',
+    // Session configuration
+    sessionLength: 31536000, // 1 year in seconds
+  }),
 };
