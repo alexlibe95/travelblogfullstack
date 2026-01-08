@@ -17,7 +17,11 @@ import {
 } from '../../constants/index.js';
 import { schemaDefinitions } from '../../cloud/schema.js';
 import { corsMiddleware, securityHeaders } from '../../src/middleware/security.js';
-import { errorHandler, notFoundHandler, ApplicationError } from '../../src/middleware/errorHandler.js';
+import {
+  errorHandler,
+  notFoundHandler,
+  ApplicationError,
+} from '../../src/middleware/errorHandler.js';
 
 describe('Islands API Endpoints (Integration)', () => {
   let app: express.Application;
@@ -93,7 +97,8 @@ describe('Islands API Endpoints (Integration)', () => {
         id: '',
         title: 'Santorini',
         shortInfo: 'Beautiful Greek island with stunning sunsets',
-        description: 'Santorini is a stunning Greek island known for its white-washed buildings, blue domes, and breathtaking sunsets. It offers unique volcanic beaches and world-class wineries.',
+        description:
+          'Santorini is a stunning Greek island known for its white-washed buildings, blue domes, and breathtaking sunsets. It offers unique volcanic beaches and world-class wineries.',
         order: 1,
         url: 'https://example.com/santorini',
         photo: 'https://example.com/santorini.jpg',
@@ -103,7 +108,8 @@ describe('Islands API Endpoints (Integration)', () => {
         id: '',
         title: 'Maldives',
         shortInfo: 'Tropical paradise with crystal clear waters',
-        description: 'The Maldives is a tropical paradise consisting of over 1,000 coral islands. It features pristine white sand beaches, crystal-clear turquoise waters, and luxurious overwater bungalows.',
+        description:
+          'The Maldives is a tropical paradise consisting of over 1,000 coral islands. It features pristine white sand beaches, crystal-clear turquoise waters, and luxurious overwater bungalows.',
         order: 2,
         url: 'https://example.com/maldives',
         photo: 'https://example.com/maldives.jpg',
@@ -113,7 +119,8 @@ describe('Islands API Endpoints (Integration)', () => {
         id: '',
         title: 'Bali',
         shortInfo: 'Indonesian island with rich culture and beautiful landscapes',
-        description: 'Bali is an Indonesian island known for its forested volcanic mountains, iconic rice paddies, beaches, and coral reefs. It offers a rich cultural experience with ancient temples and traditional arts.',
+        description:
+          'Bali is an Indonesian island known for its forested volcanic mountains, iconic rice paddies, beaches, and coral reefs. It offers a rich cultural experience with ancient temples and traditional arts.',
         order: 3,
         url: 'https://example.com/bali',
         photo: 'https://example.com/bali.jpg',
@@ -287,7 +294,9 @@ describe('Islands API Endpoints (Integration)', () => {
 
     it('should return count matching data array length', async () => {
       const response = await request(app).get(ROUTES.ISLANDS);
-      expect(response.body[API_RESPONSE_KEYS.COUNT]).toBe(response.body[API_RESPONSE_KEYS.DATA].length);
+      expect(response.body[API_RESPONSE_KEYS.COUNT]).toBe(
+        response.body[API_RESPONSE_KEYS.DATA].length
+      );
       expect(response.body[API_RESPONSE_KEYS.COUNT]).toBe(3);
     });
 
@@ -357,7 +366,10 @@ describe('Islands API Endpoints (Integration)', () => {
       const response = await request(app).get(`${ROUTES.ISLANDS}/${fakeId}`);
       expect(response.body).toHaveProperty(ERROR_RESPONSE_KEYS.ERROR);
       expect(response.body[ERROR_RESPONSE_KEYS.ERROR]).toHaveProperty(ERROR_RESPONSE_KEYS.MESSAGE);
-      expect(response.body[ERROR_RESPONSE_KEYS.ERROR]).toHaveProperty(ERROR_RESPONSE_KEYS.STATUS_CODE, HTTP_STATUS.NOT_FOUND);
+      expect(response.body[ERROR_RESPONSE_KEYS.ERROR]).toHaveProperty(
+        ERROR_RESPONSE_KEYS.STATUS_CODE,
+        HTTP_STATUS.NOT_FOUND
+      );
     });
 
     it('should return valid timestamps', async () => {

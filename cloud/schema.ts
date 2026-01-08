@@ -1,64 +1,66 @@
 /**
  * Island schema definition
- * Controlled via code (Schema from code – Mode A)
+ * Schema from code (Mode A)
  */
+
 import { ISLAND_CLASS_NAME, ISLAND_FIELDS } from '../constants/islands.js';
 
 export const schemaDefinitions = [
   {
     className: ISLAND_CLASS_NAME,
     fields: {
-      [ISLAND_FIELDS.TITLE]: {
+      [ISLAND_FIELDS.NAME]: {
         type: 'String',
         required: true,
       },
-      [ISLAND_FIELDS.SHORT_INFO]: {
+
+      [ISLAND_FIELDS.SHORT_DESCRIPTION]: {
         type: 'String',
         required: true,
       },
+
       [ISLAND_FIELDS.DESCRIPTION]: {
         type: 'String',
         required: true,
       },
+
       [ISLAND_FIELDS.ORDER]: {
         type: 'Number',
         required: true,
       },
-      [ISLAND_FIELDS.URL]: {
-        type: 'String',
-        required: false,
-      },
-      [ISLAND_FIELDS.PHOTO]: {
-        type: 'String',
-        required: false,
-      },
-      [ISLAND_FIELDS.PHOTO_THUMB]: {
-        type: 'String',
-        required: false,
-      },
-      [ISLAND_FIELDS.LOCATION]: {
-        type: 'GeoPoint',
-        required: false,
-      },
+
       [ISLAND_FIELDS.SITE]: {
         type: 'String',
         required: false,
       },
-      [ISLAND_FIELDS.NAME]: {
-        type: 'String',
+
+      [ISLAND_FIELDS.PHOTO]: {
+        type: 'File',
         required: false,
       },
-      [ISLAND_FIELDS.SHORT_DESCRIPTION]: {
-        type: 'String',
+
+      [ISLAND_FIELDS.PHOTO_THUMB]: {
+        type: 'File',
+        required: false,
+      },
+
+      [ISLAND_FIELDS.LOCATION]: {
+        type: 'GeoPoint',
         required: false,
       },
     },
+
     classLevelPermissions: {
+      // Public access
       find: { '*': true },
       get: { '*': true },
+
+      // Admin only
       create: { 'role:Admin': true },
       update: { 'role:Admin': true },
       delete: { 'role:Admin': true },
+
+      // Lock schema modifications
       addField: {},
     },
   },

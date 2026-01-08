@@ -64,7 +64,10 @@ export function securityHeaders(_req: Request, res: Response, next: NextFunction
   }
 
   // Strict Transport Security (only in production with HTTPS)
-  if (process.env.NODE_ENV === ENVIRONMENTS.PRODUCTION && env.SERVER_URL.startsWith(SECURITY_VALUES.HTTPS_ONLY)) {
+  if (
+    process.env.NODE_ENV === ENVIRONMENTS.PRODUCTION &&
+    env.SERVER_URL.startsWith(SECURITY_VALUES.HTTPS_ONLY)
+  ) {
     res.setHeader(SECURITY_HEADERS.STRICT_TRANSPORT_SECURITY, SECURITY_VALUES.HSTS_MAX_AGE);
   }
 

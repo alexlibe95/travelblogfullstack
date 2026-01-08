@@ -25,6 +25,8 @@ interface EnvConfig {
   // Optional
   NODE_ENV?: string;
   PARSE_MOUNT?: string;
+  THUMB_WIDTH?: string;
+  THUMB_HEIGHT?: string;
 }
 
 const requiredEnvVars: (keyof EnvConfig)[] = [
@@ -69,6 +71,8 @@ export function validateEnv(): EnvConfig {
     SERVER_PORT: process.env.SERVER_PORT!,
     NODE_ENV: process.env.NODE_ENV || ENVIRONMENTS.DEVELOPMENT,
     PARSE_MOUNT: process.env.PARSE_MOUNT || ROUTES.PARSE,
+    THUMB_WIDTH: process.env.THUMB_WIDTH || '250',
+    THUMB_HEIGHT: process.env.THUMB_HEIGHT || '250',
   };
 }
 
