@@ -17,9 +17,22 @@ const app = express();
 app.use(securityHeaders);
 app.use(corsMiddleware);
 
-// Body parsing middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Body parsing middleware (exclude dashboard routes - Parse Dashboard has its own body parser)
+app.use((req, res, next) => {
+  // Skip body parsing for dashboard routes
+  if (req.path.startsWith(ROUTES.DASHBOARD)) {
+    return next();
+  }
+  express.json()(req, res, next);
+});
+
+app.use((req, res, next) => {
+  // Skip body parsing for dashboard routes
+  if (req.path.startsWith(ROUTES.DASHBOARD)) {
+    return next();
+  }
+  express.urlencoded({ extended: true })(req, res, next);
+});
 
 // Serve static assets (needed for Parse Dashboard)
 app.use(ROUTES.PUBLIC, express.static(path.join(__dirname, 'public')));
@@ -84,7 +97,7 @@ app.use(notFoundHandler);
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Start server with graceful shutdown handling
+// Start server
 const port = parseInt(env.SERVER_PORT, 10);
 const server = app.listen(port, () => {
   console.log(`🚀 Parse Server running at http://localhost:${port}${ROUTES.PARSE}`);
@@ -93,51 +106,13 @@ const server = app.listen(port, () => {
   console.log(`🌍 Environment: ${env.NODE_ENV}`);
 });
 
-// Graceful shutdown handling
-const gracefulShutdown = (signal: string): void => {
-  console.log(`\n${signal} received. Starting graceful shutdown...`);
-
-  server.close(() => {
-    console.log('HTTP server closed.');
-
-    // Close Parse Server connections
-    // handleShutdown may not be available in all Parse Server versions
-    if (parseServer && typeof parseServer.handleShutdown === 'function') {
-      parseServer
-        .handleShutdown()
-        .then(() => {
-          console.log('Parse Server shutdown complete.');
-          process.exit(0);
-        })
-        .catch((err: unknown) => {
-          console.error('Error during Parse Server shutdown:', err);
-          // Exit anyway - server is already closed
-          process.exit(0);
-        });
-    } else {
-      console.log('Parse Server shutdown complete.');
-      process.exit(0);
-    }
-  });
-
-  // Force shutdown after 10 seconds
-  setTimeout(() => {
-    console.error('Forced shutdown after timeout');
-    process.exit(1);
-  }, 10000);
-};
-
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-
-// Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  gracefulShutdown('uncaughtException');
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('\nSIGTERM received. Shutting down gracefully...');
+  server.close(() => process.exit(0));
 });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  gracefulShutdown('unhandledRejection');
+process.on('SIGINT', () => {
+  console.log('\nSIGINT received. Shutting down gracefully...');
+  server.close(() => process.exit(0));
 });
