@@ -13,6 +13,7 @@ rootRoutes.get(ROUTES.ROOT, (_req: Request, res: Response) => {
       health: ROUTES.HEALTH,
       api: {
         islands: ROUTES.ISLANDS,
+        search: ROUTES.SEARCH,
       },
     },
   });
