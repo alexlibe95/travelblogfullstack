@@ -4,13 +4,13 @@
  */
 export const schemaDefinitions = [
   {
-    className: 'Island',
+    className: 'Islands',
     fields: {
-      name: {
+      title: {
         type: 'String',
         required: true,
       },
-      short_description: {
+      short_info: {
         type: 'String',
         required: true,
       },
@@ -22,20 +22,32 @@ export const schemaDefinitions = [
         type: 'Number',
         required: true,
       },
-      site: {
+      url: {
         type: 'String',
         required: false,
       },
       photo: {
-        type: 'File',
+        type: 'String',
         required: false,
       },
       photo_thumb: {
-        type: 'File',
+        type: 'String',
         required: false,
       },
       location: {
         type: 'GeoPoint',
+        required: false,
+      },
+      site: {
+        type: 'String',
+        required: false,
+      },
+      name: {
+        type: 'String',
+        required: false,
+      },
+      short_description: {
+        type: 'String',
         required: false,
       },
     },

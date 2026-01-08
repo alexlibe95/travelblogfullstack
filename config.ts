@@ -21,14 +21,15 @@ export const config = {
     deleteExtraFields: false,
   },
 
+  // File upload limits
+  maxUploadSize: '5mb',
+
   // Production-ready Parse Server options
   ...(env.NODE_ENV === ENVIRONMENTS.PRODUCTION && {
     // Enable request logging in production
     logLevel: 'info',
     // Security: prevent master key from being exposed
     masterKeyIps: process.env.MASTER_KEY_IPS?.split(',') || [],
-    // File upload limits
-    maxUploadSize: '5mb',
     // Session configuration
     sessionLength: 31536000, // 1 year in seconds
   }),
