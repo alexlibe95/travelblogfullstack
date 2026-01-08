@@ -5,18 +5,14 @@
 
 export const ISLAND_FIELDS = {
   // Core fields
-  TITLE: 'title',
-  SHORT_INFO: 'short_info',
+  NAME: 'name',
+  SHORT_DESCRIPTION: 'short_description',
   DESCRIPTION: 'description',
   ORDER: 'order',
-  URL: 'url',
+  SITE: 'site',
   PHOTO: 'photo',
   PHOTO_THUMB: 'photo_thumb',
   LOCATION: 'location',
-  // Legacy/optional fields
-  SITE: 'site',
-  NAME: 'name',
-  SHORT_DESCRIPTION: 'short_description',
   // Parse system fields
   OBJECT_ID: 'objectId',
   CREATED_AT: 'createdAt',
@@ -27,9 +23,8 @@ export const ISLAND_FIELDS = {
  * Fields returned in list view (basic info)
  */
 export const ISLAND_LIST_FIELDS = [
-  ISLAND_FIELDS.TITLE,
-  ISLAND_FIELDS.SHORT_INFO,
-  ISLAND_FIELDS.PHOTO,
+  ISLAND_FIELDS.NAME,
+  ISLAND_FIELDS.SHORT_DESCRIPTION,
   ISLAND_FIELDS.PHOTO_THUMB,
   ISLAND_FIELDS.ORDER,
 ] as const;
@@ -38,11 +33,11 @@ export const ISLAND_LIST_FIELDS = [
  * Fields returned in detail view (full info)
  */
 export const ISLAND_DETAIL_FIELDS = [
-  ISLAND_FIELDS.TITLE,
-  ISLAND_FIELDS.SHORT_INFO,
+  ISLAND_FIELDS.NAME,
+  ISLAND_FIELDS.SHORT_DESCRIPTION,
   ISLAND_FIELDS.DESCRIPTION,
   ISLAND_FIELDS.ORDER,
-  ISLAND_FIELDS.URL,
+  ISLAND_FIELDS.SITE,
   ISLAND_FIELDS.PHOTO,
   ISLAND_FIELDS.PHOTO_THUMB,
   ISLAND_FIELDS.LOCATION,

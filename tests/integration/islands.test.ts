@@ -12,6 +12,8 @@ import {
   API_RESPONSE_KEYS,
   ERROR_RESPONSE_KEYS,
   ISLAND_ERROR_MESSAGES,
+  ISLAND_LIST_FIELDS,
+  ISLAND_DETAIL_FIELDS,
 } from '../../constants/index.js';
 import { schemaDefinitions } from '../../cloud/schema.js';
 import { corsMiddleware, securityHeaders } from '../../src/middleware/security.js';
@@ -29,13 +31,12 @@ describe('Islands API Endpoints (Integration)', () => {
   let testIslandId: string;
   let mockIslands: Array<{
     id: string;
-    title: string;
-    shortInfo: string;
+    name: string;
+    short_description: string;
     description: string;
     order: number;
-    url: string;
-    photo: string;
-    photoThumb: string;
+    site: string;
+    location: Parse.GeoPoint;
   }>;
 
   beforeAll(async () => {
@@ -93,51 +94,60 @@ describe('Islands API Endpoints (Integration)', () => {
     mockIslands = [
       {
         id: '',
-        title: 'Santorini', // Will be stored as 'name' in Parse
-        shortInfo: 'Beautiful Greek island with stunning sunsets', // Will be stored as 'short_description'
+        name: 'Santorini', // Will be stored as 'name' in Parse
+        short_description: 'Beautiful Greek island with stunning sunsets', // Will be stored as 'short_description'
         description:
           'Santorini is a stunning Greek island known for its white-washed buildings, blue domes, and breathtaking sunsets. It offers unique volcanic beaches and world-class wineries.',
         order: 1,
-        url: 'https://example.com/santorini', // Will be stored as 'site'
-        photo: 'https://example.com/santorini.jpg',
-        photoThumb: 'https://example.com/santorini_thumb.jpg',
+        site: 'https://example.com/santorini', // Will be stored as 'site'
+        location: new Parse.GeoPoint({
+          latitude: 36.4583,
+          longitude: 25.3986,
+        }),
       },
       {
         id: '',
-        title: 'Maldives',
-        shortInfo: 'Tropical paradise with crystal clear waters',
+        name: 'Maldives',
+        short_description: 'Tropical paradise with crystal clear waters',
         description:
           'The Maldives is a tropical paradise consisting of over 1,000 coral islands. It features pristine white sand beaches, crystal-clear turquoise waters, and luxurious overwater bungalows.',
         order: 2,
-        url: 'https://example.com/maldives',
-        photo: 'https://example.com/maldives.jpg',
-        photoThumb: 'https://example.com/maldives_thumb.jpg',
+        site: 'https://example.com/maldives',
+        location: new Parse.GeoPoint({
+          latitude: 4.1750,
+          longitude: 73.5083,
+        }),
       },
       {
         id: '',
-        title: 'Bali',
-        shortInfo: 'Indonesian island with rich culture and beautiful landscapes',
+        name: 'Bali',
+        short_description: 'Indonesian island with rich culture and beautiful landscapes',
         description:
           'Bali is an Indonesian island known for its forested volcanic mountains, iconic rice paddies, beaches, and coral reefs. It offers a rich cultural experience with ancient temples and traditional arts.',
         order: 3,
-        url: 'https://example.com/bali',
-        photo: 'https://example.com/bali.jpg',
-        photoThumb: 'https://example.com/bali_thumb.jpg',
+        site: 'https://example.com/bali',
+        location: new Parse.GeoPoint({
+          latitude: -8.3405,
+          longitude: 115.0920,
+        }),
       },
     ];
 
     // Create test islands in Parse (using new schema fields: name, short_description, site)
+    // Note: Parse.File uploads require a file adapter, so we skip them in tests
+    // The API endpoints will still work, just without file data
     const TestIsland = Parse.Object.extend(ISLAND_CLASS_NAME);
     const createdIslands = await Promise.all(
       mockIslands.map(async (island) => {
         const parseIsland = new TestIsland();
         // Use new schema field names
-        parseIsland.set(ISLAND_FIELDS.NAME, island.title);
-        parseIsland.set(ISLAND_FIELDS.SHORT_DESCRIPTION, island.shortInfo);
+        parseIsland.set(ISLAND_FIELDS.NAME, island.name);
+        parseIsland.set(ISLAND_FIELDS.SHORT_DESCRIPTION, island.short_description);
         parseIsland.set(ISLAND_FIELDS.DESCRIPTION, island.description);
         parseIsland.set(ISLAND_FIELDS.ORDER, island.order);
-        parseIsland.set(ISLAND_FIELDS.SITE, island.url);
-        // Photo fields are File type in schema - leave them unset (optional) for testing
+        parseIsland.set(ISLAND_FIELDS.SITE, island.site);
+        parseIsland.set(ISLAND_FIELDS.LOCATION, island.location);
+        // Skip file uploads in tests - they require a file adapter configuration
         // parseIsland.set(ISLAND_FIELDS.PHOTO, island.photo);
         // parseIsland.set(ISLAND_FIELDS.PHOTO_THUMB, island.photoThumb);
         await parseIsland.save(null, { useMasterKey: true });
@@ -161,9 +171,7 @@ describe('Islands API Endpoints (Integration)', () => {
         query.ascending(ISLAND_FIELDS.ORDER);
         // Select fields that match the schema (name, short_description, etc.)
         query.select(
-          ISLAND_FIELDS.NAME,
-          ISLAND_FIELDS.SHORT_DESCRIPTION,
-          ISLAND_FIELDS.ORDER
+          ...ISLAND_LIST_FIELDS
         );
         const islands = await query.find({ useMasterKey: true });
         res.status(HTTP_STATUS.OK).json({
@@ -189,12 +197,7 @@ describe('Islands API Endpoints (Integration)', () => {
         const query = new Parse.Query(ISLAND_CLASS_NAME);
         // Select fields that match the schema
         query.select(
-          ISLAND_FIELDS.NAME,
-          ISLAND_FIELDS.SHORT_DESCRIPTION,
-          ISLAND_FIELDS.DESCRIPTION,
-          ISLAND_FIELDS.ORDER,
-          ISLAND_FIELDS.SITE,
-          ISLAND_FIELDS.LOCATION
+          ...ISLAND_DETAIL_FIELDS
         );
         const island = await query.get(id, { useMasterKey: true });
         res.status(HTTP_STATUS.OK).json({
@@ -263,18 +266,16 @@ describe('Islands API Endpoints (Integration)', () => {
       const island = response.body[API_RESPONSE_KEYS.DATA][0];
 
       expect(island).toBeDefined();
-      // Should have basic fields (schema uses: name, short_description)
       expect(island).toHaveProperty('objectId');
-      expect(island).toHaveProperty('name'); // Schema field name
-      expect(island).toHaveProperty('short_description'); // Schema field name
-      // Photo fields are File type and may not be present if not set
+      expect(island).toHaveProperty('name');
+      expect(island).toHaveProperty('short_description');
       expect(island).toHaveProperty('order');
-
-      // Should NOT have detail fields
+      // Photo fields are optional and not set in tests (require file adapter)
       expect(island).not.toHaveProperty('description');
       expect(island).not.toHaveProperty('site');
       expect(island).not.toHaveProperty('location');
-      // createdAt and updatedAt are automatically included by Parse
+      expect(island).not.toHaveProperty('photo');
+      expect(island).not.toHaveProperty('photo_thumb');
     });
 
     it('should return count matching data array length', async () => {
@@ -313,15 +314,15 @@ describe('Islands API Endpoints (Integration)', () => {
       const response = await request(app).get(`${ROUTES.ISLANDS}/${testIslandId}`);
       const island = response.body[API_RESPONSE_KEYS.DATA];
 
-      // Should have all detail fields (schema uses: name, short_description, site)
       expect(island).toHaveProperty('objectId');
-      expect(island).toHaveProperty('name'); // Schema field name
-      expect(island).toHaveProperty('short_description'); // Schema field name
+      expect(island).toHaveProperty('name');
+      expect(island).toHaveProperty('short_description');
       expect(island).toHaveProperty('description');
       expect(island).toHaveProperty('order');
-      expect(island).toHaveProperty('site'); // Schema field name (not 'url')
-      // Photo fields are File type and may not be present if not set
-      // location is optional and may not be present if not set
+      expect(island).toHaveProperty('site');
+      expect(island).toHaveProperty('location');
+      // Photo fields are optional and not set in tests (require file adapter)
+      // They may be undefined/null if not set
       expect(island).toHaveProperty('createdAt');
       expect(island).toHaveProperty('updatedAt');
     });
@@ -331,11 +332,12 @@ describe('Islands API Endpoints (Integration)', () => {
       const island = response.body[API_RESPONSE_KEYS.DATA];
 
       expect(island.objectId).toBe(testIslandId);
-      expect(island.name).toBe('Santorini'); // Schema field name
-      expect(island.short_description).toBe('Beautiful Greek island with stunning sunsets'); // Schema field name
+      expect(island.name).toBe('Santorini');
+      expect(island.short_description).toBe('Beautiful Greek island with stunning sunsets');
       expect(island.description).toContain('Santorini');
       expect(island.order).toBe(1);
-      expect(island.site).toBe('https://example.com/santorini'); // Schema field name
+      expect(island.site).toBe('https://example.com/santorini');
+      expect(island.location).toBeDefined();
     });
 
     it('should return 404 for non-existent island ID', async () => {

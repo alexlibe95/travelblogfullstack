@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { ROUTES, HTTP_STATUS } from '../../constants/index.js';
-import { env } from '../utils/env.js';
 import path from 'path';
 import { readFileSync } from 'fs';
+import { Request, Response } from 'express';
+import { ROUTES, HTTP_STATUS } from '../../constants/index.js';
+import { env } from '../utils/env.js';
 
 const __dirname = path.resolve();
 
@@ -13,7 +14,7 @@ const packageJson = JSON.parse(readFileSync(path.join(__dirname, 'package.json')
 
 export const healthRoutes = Router();
 
-healthRoutes.get(ROUTES.HEALTH, (_req, res) => {
+healthRoutes.get(ROUTES.HEALTH, (_req: Request, res: Response) => {
   res.status(HTTP_STATUS.OK).json({
     status: 'ok',
     timestamp: new Date().toISOString(),

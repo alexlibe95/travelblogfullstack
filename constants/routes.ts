@@ -6,4 +6,5 @@ export const ROUTES = {
   ROOT: '/',
   API: '/api',
   ISLANDS: '/api/islands',
+  SEARCH: '/api/search'
 } as const;
