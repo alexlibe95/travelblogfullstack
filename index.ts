@@ -3,6 +3,7 @@ import express from 'express';
 import { ParseServer } from 'parse-server';
 import ParseDashboard from 'parse-dashboard';
 import path from 'path';
+import { readFileSync } from 'fs';
 import { config } from './config.js';
 import { ENVIRONMENTS, HTTP_STATUS, ROUTES } from './constants/index.js';
 import { env } from './src/utils/env.js';
@@ -10,6 +11,13 @@ import { corsMiddleware, securityHeaders } from './src/middleware/security.js';
 import { errorHandler, notFoundHandler } from './src/middleware/errorHandler.js';
 
 const __dirname = path.resolve();
+
+// Get version from package.json
+const packageJson = JSON.parse(
+  readFileSync(path.join(__dirname, 'package.json'), 'utf-8')
+) as { version: string };
+const VERSION = packageJson.version;
+
 const app = express();
 
 // Security middleware (must be early in the chain)
@@ -43,6 +51,7 @@ app.get(ROUTES.HEALTH, (_req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: env.NODE_ENV,
+    version: VERSION,
   });
 });
 
@@ -81,7 +90,7 @@ app.use(ROUTES.DASHBOARD, dashboard);
 app.get(ROUTES.ROOT, (_req, res) => {
   res.json({
     message: 'Parse Server is running 🚀',
-    version: '1.0.0',
+    version: VERSION,
     endpoints: {
       parse: ROUTES.PARSE,
       dashboard: ROUTES.DASHBOARD,
@@ -103,6 +112,7 @@ const server = app.listen(port, () => {
   console.log(`📊 Dashboard available at http://localhost:${port}${ROUTES.DASHBOARD}`);
   console.log(`💚 Health check available at http://localhost:${port}${ROUTES.HEALTH}`);
   console.log(`🌍 Environment: ${env.NODE_ENV}`);
+  console.log(`🔍 Version: ${VERSION}`);
 });
 
 // Graceful shutdown
