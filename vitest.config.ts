@@ -8,6 +8,7 @@ export default defineConfig({
     include: ['**/*.test.ts', '**/*.spec.ts'],
     exclude: ['node_modules', 'dist', '.cursor'],
     setupFiles: ['./tests/setup.ts'],
+    hookTimeout: 30000, // 30 seconds for beforeAll/afterAll hooks
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

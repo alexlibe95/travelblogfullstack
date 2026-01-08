@@ -2,51 +2,53 @@
  * Island schema definition
  * Controlled via code (Schema from code – Mode A)
  */
+import { ISLAND_CLASS_NAME, ISLAND_FIELDS } from '../constants/islands.js';
+
 export const schemaDefinitions = [
   {
-    className: 'Islands',
+    className: ISLAND_CLASS_NAME,
     fields: {
-      title: {
+      [ISLAND_FIELDS.TITLE]: {
         type: 'String',
         required: true,
       },
-      short_info: {
+      [ISLAND_FIELDS.SHORT_INFO]: {
         type: 'String',
         required: true,
       },
-      description: {
+      [ISLAND_FIELDS.DESCRIPTION]: {
         type: 'String',
         required: true,
       },
-      order: {
+      [ISLAND_FIELDS.ORDER]: {
         type: 'Number',
         required: true,
       },
-      url: {
+      [ISLAND_FIELDS.URL]: {
         type: 'String',
         required: false,
       },
-      photo: {
+      [ISLAND_FIELDS.PHOTO]: {
         type: 'String',
         required: false,
       },
-      photo_thumb: {
+      [ISLAND_FIELDS.PHOTO_THUMB]: {
         type: 'String',
         required: false,
       },
-      location: {
+      [ISLAND_FIELDS.LOCATION]: {
         type: 'GeoPoint',
         required: false,
       },
-      site: {
+      [ISLAND_FIELDS.SITE]: {
         type: 'String',
         required: false,
       },
-      name: {
+      [ISLAND_FIELDS.NAME]: {
         type: 'String',
         required: false,
       },
-      short_description: {
+      [ISLAND_FIELDS.SHORT_DESCRIPTION]: {
         type: 'String',
         required: false,
       },

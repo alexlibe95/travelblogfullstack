@@ -2,13 +2,23 @@ import 'dotenv/config';
 import express from 'express';
 import { ParseServer } from 'parse-server';
 import ParseDashboard from 'parse-dashboard';
+import Parse from 'parse/node.js';
 import path from 'path';
 import { readFileSync } from 'fs';
 import { config } from './config.js';
-import { ENVIRONMENTS, HTTP_STATUS, ROUTES } from './constants/index.js';
+import {
+  ENVIRONMENTS,
+  HTTP_STATUS,
+  ROUTES,
+  ISLAND_CLASS_NAME,
+  ISLAND_FIELDS,
+  ISLAND_LIST_FIELDS,
+  ISLAND_DETAIL_FIELDS,
+} from './constants/index.js';
 import { env } from './src/utils/env.js';
 import { corsMiddleware, securityHeaders } from './src/middleware/security.js';
 import { errorHandler, notFoundHandler } from './src/middleware/errorHandler.js';
+import { ApplicationError } from './src/middleware/errorHandler.js';
 
 const __dirname = path.resolve();
 
@@ -60,6 +70,10 @@ const parseServer = new ParseServer(config);
 await parseServer.start();
 app.use(ROUTES.PARSE, parseServer.app);
 
+// Initialize Parse SDK for server-side queries
+Parse.initialize(env.APP_ID, env.MASTER_KEY);
+Parse.serverURL = env.SERVER_URL;
+
 // Parse Dashboard
 // Only allow insecure HTTP in development
 const dashboard = new ParseDashboard(
@@ -86,6 +100,92 @@ const dashboard = new ParseDashboard(
 
 app.use(ROUTES.DASHBOARD, dashboard);
 
+// API Routes
+// Get all islands (basic info only)
+app.get(ROUTES.ISLANDS, async (_req, res, next) => {
+  try {
+    const query = new Parse.Query(ISLAND_CLASS_NAME);
+    // Sort by order field
+    query.ascending(ISLAND_FIELDS.ORDER);
+    // Select only basic fields for list view
+    query.select(...ISLAND_LIST_FIELDS);
+
+    const islands = await query.find({ useMasterKey: true });
+
+    // Transform Parse objects to plain JSON with basic fields only
+    const islandsData = islands.map((island) => {
+      const data = island.toJSON();
+      return {
+        id: data[ISLAND_FIELDS.OBJECT_ID],
+        title: data[ISLAND_FIELDS.TITLE],
+        shortInfo: data[ISLAND_FIELDS.SHORT_INFO],
+        photo: data[ISLAND_FIELDS.PHOTO],
+        photoThumb: data[ISLAND_FIELDS.PHOTO_THUMB],
+        order: data[ISLAND_FIELDS.ORDER],
+      };
+    });
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      count: islandsData.length,
+      data: islandsData,
+    });
+  } catch (error) {
+    next(
+      new ApplicationError(
+        error instanceof Error ? error.message : 'Failed to fetch islands',
+        HTTP_STATUS.INTERNAL_SERVER_ERROR
+      )
+    );
+  }
+});
+
+// Get single island by ID (full details)
+app.get(`${ROUTES.ISLANDS}/:id`, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      throw new ApplicationError('Island ID is required', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const query = new Parse.Query(ISLAND_CLASS_NAME);
+    // Select all fields for detailed view
+    query.select(...ISLAND_DETAIL_FIELDS);
+
+    const island = await query.get(id, { useMasterKey: true });
+    const data = island.toJSON();
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: {
+        id: data[ISLAND_FIELDS.OBJECT_ID],
+        title: data[ISLAND_FIELDS.TITLE],
+        shortInfo: data[ISLAND_FIELDS.SHORT_INFO],
+        description: data[ISLAND_FIELDS.DESCRIPTION],
+        order: data[ISLAND_FIELDS.ORDER],
+        url: data[ISLAND_FIELDS.URL],
+        photo: data[ISLAND_FIELDS.PHOTO],
+        photoThumb: data[ISLAND_FIELDS.PHOTO_THUMB],
+        location: data[ISLAND_FIELDS.LOCATION],
+        createdAt: data[ISLAND_FIELDS.CREATED_AT],
+        updatedAt: data[ISLAND_FIELDS.UPDATED_AT],
+      },
+    });
+  } catch (error) {
+    if (error instanceof Parse.Error && error.code === Parse.Error.OBJECT_NOT_FOUND) {
+      next(new ApplicationError('Island not found', HTTP_STATUS.NOT_FOUND));
+    } else {
+      next(
+        new ApplicationError(
+          error instanceof Error ? error.message : 'Failed to fetch island',
+          HTTP_STATUS.INTERNAL_SERVER_ERROR
+        )
+      );
+    }
+  }
+});
+
 // Root endpoint
 app.get(ROUTES.ROOT, (_req, res) => {
   res.json({
@@ -95,6 +195,9 @@ app.get(ROUTES.ROOT, (_req, res) => {
       parse: ROUTES.PARSE,
       dashboard: ROUTES.DASHBOARD,
       health: ROUTES.HEALTH,
+      api: {
+        islands: ROUTES.ISLANDS,
+      },
     },
   });
 });

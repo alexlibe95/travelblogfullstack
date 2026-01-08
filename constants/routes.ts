@@ -4,4 +4,6 @@ export const ROUTES = {
   PUBLIC: '/public',
   HEALTH: '/health',
   ROOT: '/',
+  API: '/api',
+  ISLANDS: '/api/islands',
 } as const;

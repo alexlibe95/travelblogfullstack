@@ -39,3 +39,16 @@ export const LOG_KEYS = {
   STACK: 'stack',
   IS_OPERATIONAL: 'isOperational',
 } as const;
+
+export const API_RESPONSE_KEYS = {
+  SUCCESS: 'success',
+  COUNT: 'count',
+  DATA: 'data',
+} as const;
+
+export const ISLAND_ERROR_MESSAGES = {
+  ID_REQUIRED: 'Island ID is required',
+  NOT_FOUND: 'Island not found',
+  FETCH_FAILED: 'Failed to fetch islands',
+  FETCH_ONE_FAILED: 'Failed to fetch island',
+} as const;
