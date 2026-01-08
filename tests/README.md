@@ -5,21 +5,25 @@ This project uses [Vitest](https://vitest.dev/) for testing, a fast Vite-native 
 ## Running Tests
 
 ### Run all tests in watch mode
+
 ```bash
 npm test
 ```
 
 ### Run tests once (CI mode)
+
 ```bash
 npm run test:run
 ```
 
 ### Run tests with UI
+
 ```bash
 npm run test:ui
 ```
 
 ### Run tests with coverage
+
 ```bash
 npm run test:coverage
 ```
@@ -46,6 +50,7 @@ src/
 Unit tests are co-located with their source files using the `.test.ts` extension.
 
 Example:
+
 ```typescript
 import { describe, it, expect } from 'vitest';
 import { myFunction } from './myModule.js';
@@ -62,6 +67,7 @@ describe('myFunction', () => {
 Integration tests are located in the `tests/integration/` directory and test multiple components working together.
 
 Example:
+
 ```typescript
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
@@ -107,6 +113,7 @@ beforeEach(() => {
 ## Common Patterns
 
 ### Testing Async Functions
+
 ```typescript
 it('should handle async operations', async () => {
   const result = await asyncFunction();
@@ -115,6 +122,7 @@ it('should handle async operations', async () => {
 ```
 
 ### Testing Error Cases
+
 ```typescript
 it('should throw error on invalid input', async () => {
   await expect(functionThatThrows()).rejects.toThrow('Error message');
@@ -122,6 +130,7 @@ it('should throw error on invalid input', async () => {
 ```
 
 ### Mocking Modules
+
 ```typescript
 import { vi } from 'vitest';
 
@@ -138,4 +147,3 @@ Tests run automatically in CI/CD pipelines. Ensure all tests pass before merging
 npm run test:run
 npm run lint
 ```
-

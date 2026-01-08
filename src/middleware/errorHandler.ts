@@ -1,4 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import {
+  HTTP_STATUS,
+  ERROR_MESSAGES,
+  ERROR_RESPONSE_KEYS,
+  LOG_KEYS,
+  ENVIRONMENTS,
+} from '../../constants/index.js';
 
 export interface AppError extends Error {
   statusCode?: number;
@@ -12,7 +19,11 @@ export class ApplicationError extends Error implements AppError {
   statusCode: number;
   isOperational: boolean;
 
-  constructor(message: string, statusCode: number = 500, isOperational: boolean = true) {
+  constructor(
+    message: string,
+    statusCode: number = HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    isOperational: boolean = true
+  ) {
     super(message);
     this.statusCode = statusCode;
     this.isOperational = isOperational;
@@ -30,28 +41,31 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ): void {
-  const statusCode = err.statusCode || 500;
+  const statusCode = err.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR;
   const isOperational = err.isOperational !== false;
 
   // Log error for debugging
-  console.error('Error:', {
-    message: err.message,
-    statusCode,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
-    isOperational,
+  console.error(LOG_KEYS.ERROR, {
+    [LOG_KEYS.MESSAGE]: err.message,
+    [LOG_KEYS.STATUS_CODE]: statusCode,
+    [LOG_KEYS.STACK]: process.env.NODE_ENV === ENVIRONMENTS.DEVELOPMENT ? err.stack : undefined,
+    [LOG_KEYS.IS_OPERATIONAL]: isOperational,
   });
 
   // Don't expose internal errors in production
   const message =
-    statusCode === 500 && process.env.NODE_ENV === 'production'
-      ? 'Internal Server Error'
+    statusCode === HTTP_STATUS.INTERNAL_SERVER_ERROR &&
+    process.env.NODE_ENV === ENVIRONMENTS.PRODUCTION
+      ? ERROR_MESSAGES.INTERNAL_SERVER_ERROR
       : err.message;
 
   res.status(statusCode).json({
-    error: {
-      message,
-      statusCode,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    [ERROR_RESPONSE_KEYS.ERROR]: {
+      [ERROR_RESPONSE_KEYS.MESSAGE]: message,
+      [ERROR_RESPONSE_KEYS.STATUS_CODE]: statusCode,
+      ...(process.env.NODE_ENV === ENVIRONMENTS.DEVELOPMENT && {
+        [ERROR_RESPONSE_KEYS.STACK]: err.stack,
+      }),
     },
   });
 }
@@ -71,10 +85,10 @@ export function asyncHandler(
  * 404 Not Found handler
  */
 export function notFoundHandler(_req: Request, res: Response): void {
-  res.status(404).json({
-    error: {
-      message: 'Route not found',
-      statusCode: 404,
+  res.status(HTTP_STATUS.NOT_FOUND).json({
+    [ERROR_RESPONSE_KEYS.ERROR]: {
+      [ERROR_RESPONSE_KEYS.MESSAGE]: ERROR_MESSAGES.ROUTE_NOT_FOUND,
+      [ERROR_RESPONSE_KEYS.STATUS_CODE]: HTTP_STATUS.NOT_FOUND,
     },
   });
 }

@@ -1,0 +1,41 @@
+/**
+ * HTTP-related constants
+ */
+
+export const HTTP_STATUS = {
+  OK: 200,
+  CREATED: 201,
+  NO_CONTENT: 204,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
+  INTERNAL_SERVER_ERROR: 500,
+  BAD_GATEWAY: 502,
+  SERVICE_UNAVAILABLE: 503,
+} as const;
+
+export const ERROR_MESSAGES = {
+  INTERNAL_SERVER_ERROR: 'Internal Server Error',
+  ROUTE_NOT_FOUND: 'Route not found',
+  BAD_REQUEST: 'Bad Request',
+  UNAUTHORIZED: 'Unauthorized',
+  FORBIDDEN: 'Forbidden',
+  NOT_FOUND: 'Not Found',
+} as const;
+
+export const ERROR_RESPONSE_KEYS = {
+  ERROR: 'error',
+  MESSAGE: 'message',
+  STATUS_CODE: 'statusCode',
+  STACK: 'stack',
+} as const;
+
+export const LOG_KEYS = {
+  ERROR: 'Error:',
+  MESSAGE: 'message',
+  STATUS_CODE: 'statusCode',
+  STACK: 'stack',
+  IS_OPERATIONAL: 'isOperational',
+} as const;

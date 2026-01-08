@@ -12,10 +12,5 @@
     "tests/**/*.spec.ts",
     "vitest.config.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "public"
-  ]
+  "exclude": ["node_modules", "dist", "public"]
 }
-

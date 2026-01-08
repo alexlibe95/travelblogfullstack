@@ -1,4 +1,5 @@
 import { schemaDefinitions } from './cloud/schema.js';
+import { ENVIRONMENTS } from './constants/index.js';
 import { env } from './src/utils/env.js';
 
 export const config = {
@@ -21,7 +22,7 @@ export const config = {
   },
 
   // Production-ready Parse Server options
-  ...(env.NODE_ENV === 'production' && {
+  ...(env.NODE_ENV === ENVIRONMENTS.PRODUCTION && {
     // Enable request logging in production
     logLevel: 'info',
     // Security: prevent master key from being exposed

@@ -3,4 +3,5 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   PUBLIC: '/public',
   HEALTH: '/health',
+  ROOT: '/',
 } as const;

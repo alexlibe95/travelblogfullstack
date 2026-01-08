@@ -3,9 +3,8 @@ import express from 'express';
 import { ParseServer } from 'parse-server';
 import ParseDashboard from 'parse-dashboard';
 import path from 'path';
-
 import { config } from './config.js';
-import { ROUTES } from './constants/index.js';
+import { ENVIRONMENTS, HTTP_STATUS, ROUTES } from './constants/index.js';
 import { env } from './src/utils/env.js';
 import { corsMiddleware, securityHeaders } from './src/middleware/security.js';
 import { errorHandler, notFoundHandler } from './src/middleware/errorHandler.js';
@@ -38,8 +37,8 @@ app.use((req, res, next) => {
 app.use(ROUTES.PUBLIC, express.static(path.join(__dirname, 'public')));
 
 // Health check endpoint (for monitoring)
-app.get('/health', (_req, res) => {
-  res.status(200).json({
+app.get(ROUTES.HEALTH, (_req, res) => {
+  res.status(HTTP_STATUS.OK).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
@@ -72,14 +71,14 @@ const dashboard = new ParseDashboard(
     ],
   },
   {
-    allowInsecureHTTP: env.NODE_ENV === 'development',
+    allowInsecureHTTP: env.NODE_ENV === ENVIRONMENTS.DEVELOPMENT,
   }
 );
 
 app.use(ROUTES.DASHBOARD, dashboard);
 
 // Root endpoint
-app.get('/', (_req, res) => {
+app.get(ROUTES.ROOT, (_req, res) => {
   res.json({
     message: 'Parse Server is running 🚀',
     version: '1.0.0',

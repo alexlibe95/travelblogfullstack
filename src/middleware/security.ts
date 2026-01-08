@@ -1,5 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { env } from '../utils/env.js';
+import {
+  CORS_HEADERS,
+  SECURITY_HEADERS,
+  SECURITY_VALUES,
+  ALLOWED_METHODS,
+  PARSE_HEADERS,
+  ENVIRONMENTS,
+  DEFAULT_DEV_ORIGINS,
+  HTTP_METHODS,
+} from '../../constants/index.js';
 
 /**
  * CORS configuration middleware
@@ -7,27 +17,24 @@ import { env } from '../utils/env.js';
 export function corsMiddleware(_req: Request, res: Response, next: NextFunction): void {
   // In production, replace '*' with your frontend domain(s)
   const allowedOrigins =
-    process.env.NODE_ENV === 'production'
+    process.env.NODE_ENV === ENVIRONMENTS.PRODUCTION
       ? process.env.ALLOWED_ORIGINS?.split(',') || []
-      : ['http://localhost:3000', 'http://localhost:4200', 'http://localhost:5173'];
+      : DEFAULT_DEV_ORIGINS;
 
   const origin = _req.headers.origin;
 
   if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  } else if (process.env.NODE_ENV === 'development') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader(CORS_HEADERS.ALLOW_ORIGIN, origin);
+  } else if (process.env.NODE_ENV === ENVIRONMENTS.DEVELOPMENT) {
+    res.setHeader(CORS_HEADERS.ALLOW_ORIGIN, '*');
   }
 
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, X-Parse-Application-Id, X-Parse-REST-API-Key'
-  );
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
+  res.setHeader(CORS_HEADERS.ALLOW_METHODS, ALLOWED_METHODS);
+  res.setHeader(CORS_HEADERS.ALLOW_HEADERS, PARSE_HEADERS);
+  res.setHeader(CORS_HEADERS.ALLOW_CREDENTIALS, SECURITY_VALUES.CORS_ALLOW_CREDENTIALS);
+  res.setHeader(CORS_HEADERS.MAX_AGE, SECURITY_VALUES.CORS_MAX_AGE);
 
-  if (_req.method === 'OPTIONS') {
+  if (_req.method === HTTP_METHODS.OPTIONS) {
     res.sendStatus(204);
     return;
   }
@@ -40,28 +47,25 @@ export function corsMiddleware(_req: Request, res: Response, next: NextFunction)
  */
 export function securityHeaders(_req: Request, res: Response, next: NextFunction): void {
   // Prevent clickjacking
-  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader(SECURITY_HEADERS.FRAME_OPTIONS, SECURITY_VALUES.FRAME_OPTIONS_DENY);
 
   // Prevent MIME type sniffing
-  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader(SECURITY_HEADERS.CONTENT_TYPE_OPTIONS, SECURITY_VALUES.CONTENT_TYPE_NOSNIFF);
 
   // Enable XSS protection
-  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader(SECURITY_HEADERS.XSS_PROTECTION, SECURITY_VALUES.XSS_PROTECTION);
 
   // Referrer Policy
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader(SECURITY_HEADERS.REFERRER_POLICY, SECURITY_VALUES.REFERRER_POLICY);
 
   // Content Security Policy (adjust based on your needs)
-  if (process.env.NODE_ENV === 'production') {
-    res.setHeader(
-      'Content-Security-Policy',
-      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
-    );
+  if (process.env.NODE_ENV === ENVIRONMENTS.PRODUCTION) {
+    res.setHeader(SECURITY_HEADERS.CONTENT_SECURITY_POLICY, SECURITY_VALUES.CSP_DEFAULT);
   }
 
   // Strict Transport Security (only in production with HTTPS)
-  if (process.env.NODE_ENV === 'production' && env.SERVER_URL.startsWith('https://')) {
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  if (process.env.NODE_ENV === ENVIRONMENTS.PRODUCTION && env.SERVER_URL.startsWith(SECURITY_VALUES.HTTPS_ONLY)) {
+    res.setHeader(SECURITY_HEADERS.STRICT_TRANSPORT_SECURITY, SECURITY_VALUES.HSTS_MAX_AGE);
   }
 
   next();

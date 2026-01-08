@@ -3,6 +3,8 @@
  * Ensures all required environment variables are present before startup
  */
 
+import { ENVIRONMENTS, ROUTES } from '../../constants/index.js';
+
 interface EnvConfig {
   // Database
   DB_URI: string;
@@ -65,8 +67,8 @@ export function validateEnv(): EnvConfig {
     APP_USER: process.env.APP_USER!,
     APP_PASS: process.env.APP_PASS!,
     SERVER_PORT: process.env.SERVER_PORT!,
-    NODE_ENV: process.env.NODE_ENV || 'development',
-    PARSE_MOUNT: process.env.PARSE_MOUNT || '/parse',
+    NODE_ENV: process.env.NODE_ENV || ENVIRONMENTS.DEVELOPMENT,
+    PARSE_MOUNT: process.env.PARSE_MOUNT || ROUTES.PARSE,
   };
 }
 

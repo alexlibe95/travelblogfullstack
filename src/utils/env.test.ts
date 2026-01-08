@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { ENVIRONMENTS, ROUTES } from '../../constants/index.js';
 
 describe('Environment Validation', () => {
   const originalEnv = process.env;
@@ -44,7 +45,9 @@ describe('Environment Validation', () => {
     process.env.SERVER_PORT = '1337';
     delete process.env.DB_URI;
 
-    await expect(importAndValidate()).rejects.toThrow('Missing required environment variables: DB_URI');
+    await expect(importAndValidate()).rejects.toThrow(
+      'Missing required environment variables: DB_URI'
+    );
   });
 
   it('should throw error when multiple variables are missing', async () => {
@@ -69,7 +72,7 @@ describe('Environment Validation', () => {
     delete process.env.NODE_ENV;
 
     const config = await importAndValidate();
-    expect(config.NODE_ENV).toBe('development');
+    expect(config.NODE_ENV).toBe(ENVIRONMENTS.DEVELOPMENT);
   });
 
   it('should return default PARSE_MOUNT when not set', async () => {
@@ -84,7 +87,7 @@ describe('Environment Validation', () => {
     delete process.env.PARSE_MOUNT;
 
     const config = await importAndValidate();
-    expect(config.PARSE_MOUNT).toBe('/parse');
+    expect(config.PARSE_MOUNT).toBe(ROUTES.PARSE);
   });
 
   it('should return all environment variables correctly', async () => {
@@ -96,7 +99,7 @@ describe('Environment Validation', () => {
     process.env.APP_USER = 'testuser';
     process.env.APP_PASS = 'testpass';
     process.env.SERVER_PORT = '1337';
-    process.env.NODE_ENV = 'production';
+    process.env.NODE_ENV = ENVIRONMENTS.PRODUCTION;
     process.env.PARSE_MOUNT = '/api';
 
     const config = await importAndValidate();
@@ -109,7 +112,7 @@ describe('Environment Validation', () => {
     expect(config.APP_USER).toBe('testuser');
     expect(config.APP_PASS).toBe('testpass');
     expect(config.SERVER_PORT).toBe('1337');
-    expect(config.NODE_ENV).toBe('production');
+    expect(config.NODE_ENV).toBe(ENVIRONMENTS.PRODUCTION);
     expect(config.PARSE_MOUNT).toBe('/api');
   });
 });
