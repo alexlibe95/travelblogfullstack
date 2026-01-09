@@ -14,6 +14,37 @@ const packageJson = JSON.parse(readFileSync(path.join(__dirname, 'package.json')
 
 export const healthRoutes = Router();
 
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check
+ *     tags: [Health]
+ *     description: Returns server health status and uptime
+ *     responses:
+ *       200:
+ *         description: Server is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 uptime:
+ *                   type: number
+ *                   example: 1234.56
+ *                 environment:
+ *                   type: string
+ *                   example: development
+ *                 version:
+ *                   type: string
+ *                   example: 1.0.0
+ */
 healthRoutes.get(ROUTES.HEALTH, (_req: Request, res: Response) => {
   res.status(HTTP_STATUS.OK).json({
     status: 'ok',

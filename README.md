@@ -146,7 +146,10 @@ travelblogfullstack/
 │   │   ├── search.routes.ts
 │   │   ├── health.routes.ts
 │   │   ├── root.routes.ts
+│   │   ├── swagger.routes.ts
 │   │   └── index.ts
+│   ├── config/               # Configuration files
+│   │   └── swagger.ts        # Swagger/OpenAPI configuration
 │   ├── server/                # Server setup
 │   │   ├── app.ts             # Express app configuration
 │   │   ├── parse.ts           # Parse Server setup
@@ -405,6 +408,25 @@ http://localhost:5000/dashboard
 ```
 
 Login with credentials from `APP_USER` and `APP_PASS` environment variables.
+
+### API Documentation (Swagger)
+
+Interactive API documentation is available at:
+```
+http://localhost:5000/api-docs
+```
+
+The Swagger UI provides:
+- Complete API endpoint documentation
+- Request/response schemas
+- Try-it-out functionality to test endpoints
+- Authentication support (session token)
+
+All API endpoints are documented with:
+- Request parameters and body schemas
+- Response schemas and status codes
+- Authentication requirements
+- Example requests and responses
 
 ## 🗄️ Database Schema
 

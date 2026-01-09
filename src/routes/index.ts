@@ -4,8 +4,10 @@ import { islandRoutes } from './islands.routes.js';
 import { rootRoutes } from './root.routes.js';
 import { searchRoutes } from './search.routes.js';
 import { authRoutes } from './auth.routes.js';
+import { swaggerRoutes } from './swagger.routes.js';
 
 export function registerRoutes(app: Application) {
+  app.use(swaggerRoutes);
   app.use(authRoutes);
   app.use(islandRoutes);
   app.use(searchRoutes);
