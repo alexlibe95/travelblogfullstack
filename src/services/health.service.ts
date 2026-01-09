@@ -29,6 +29,7 @@ async function checkDatabase(): Promise<{ status: 'ok' | 'error'; message?: stri
   try {
     // Perform a simple query to check database connectivity
     // Using _Installation class as it's lightweight and always exists
+    // System operation - master key required for server-side health checks
     const query = new Parse.Query('_Installation');
     query.limit(1);
     await query.find({ useMasterKey: true });
@@ -67,6 +68,7 @@ async function checkParseServer(): Promise<{ status: 'ok' | 'error'; message?: s
 
     // Perform a lightweight operation to verify Parse Server is responding
     // Using a simple query to _Installation class
+    // System operation - master key required for server-side health checks
     const query = new Parse.Query('_Installation');
     query.limit(1);
     await query.find({ useMasterKey: true });

@@ -29,7 +29,8 @@ export async function searchIslands(req: Request, res: Response, next: NextFunct
     // Only fields needed for dropdown
     query.select(ISLAND_FIELDS.OBJECT_ID, ISLAND_FIELDS.NAME);
 
-    const results = await query.find({ useMasterKey: true });
+    // Public read - no master key needed (schema allows find: { '*': true })
+    const results = await query.find();
 
     res.status(HTTP_STATUS.OK).json({
       success: true,

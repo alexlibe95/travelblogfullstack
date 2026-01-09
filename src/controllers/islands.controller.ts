@@ -17,7 +17,8 @@ export async function getIslands(_req: Request, res: Response, next: NextFunctio
     query.ascending(ISLAND_FIELDS.ORDER);
     query.select(...ISLAND_LIST_FIELDS);
 
-    const islands = await query.find({ useMasterKey: true });
+    // Public read - no master key needed (schema allows find: { '*': true })
+    const islands = await query.find();
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
@@ -40,7 +41,8 @@ export async function getIslandById(req: Request, res: Response, next: NextFunct
     const query = new Parse.Query(ISLAND_CLASS_NAME);
     query.select(...ISLAND_DETAIL_FIELDS);
 
-    const island = await query.get(req.params.id, { useMasterKey: true });
+    // Public read - no master key needed (schema allows get: { '*': true })
+    const island = await query.get(req.params.id);
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
@@ -67,6 +69,9 @@ export async function getIslandById(req: Request, res: Response, next: NextFunct
 export async function updateIsland(req: Request, res: Response, next: NextFunction) {
   const { id } = req.params;
   try {
+    // requireAdmin middleware ensures req.parseUser is set and user is admin
+    // Note: Server-side Parse operations require useMasterKey even for authenticated users
+    // The admin status is already verified by requireAdmin middleware
     const query = new Parse.Query(ISLAND_CLASS_NAME);
     const island = await query.get(id, { useMasterKey: true });
 
@@ -83,6 +88,8 @@ export async function updateIsland(req: Request, res: Response, next: NextFuncti
       throw new ApplicationError('No valid fields provided for update', HTTP_STATUS.BAD_REQUEST);
     }
 
+    // Save with master key - admin status verified by requireAdmin middleware
+    // Schema ACL: update: { 'role:Admin': true } - enforced by middleware, not Parse ACL in server-side code
     await island.save(null, { useMasterKey: true });
 
     res.status(HTTP_STATUS.OK).json({
@@ -113,6 +120,8 @@ export async function uploadIslandPhoto(req: Request, res: Response, next: NextF
       throw new ApplicationError('Photo file is required', HTTP_STATUS.BAD_REQUEST);
     }
 
+    // requireAdmin middleware ensures req.parseUser is set and user is admin
+    // Note: Server-side Parse operations require useMasterKey even for authenticated users
     const islandQuery = new Parse.Query(ISLAND_CLASS_NAME);
     const island = await islandQuery.get(id, { useMasterKey: true });
 
@@ -121,6 +130,7 @@ export async function uploadIslandPhoto(req: Request, res: Response, next: NextF
       base64: req.file.buffer.toString('base64'),
     });
 
+    // File operations require master key in server-side code
     await parseFile.save({ useMasterKey: true });
 
     // Set photo (thumbnail will be created by afterSave trigger)
@@ -129,6 +139,7 @@ export async function uploadIslandPhoto(req: Request, res: Response, next: NextF
     // Clear old thumbnail
     island.unset(ISLAND_FIELDS.PHOTO_THUMB);
 
+    // Save with master key - admin status verified by requireAdmin middleware
     await island.save(null, { useMasterKey: true });
 
     res.status(HTTP_STATUS.OK).json({
