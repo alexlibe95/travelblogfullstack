@@ -1,35 +1,89 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import express from 'express';
-import { HTTP_STATUS, ENVIRONMENTS, ROUTES } from '../../constants/index.js';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import ParseServer from 'parse-server';
+import Parse from 'parse/node.js';
+import { HTTP_STATUS, ROUTES, MAX_GLOBAL_UPLOAD_SIZE_MB } from '../../constants/index.js';
+import { schemaDefinitions } from '../../cloud/schema.js';
+import { healthRoutes } from '../../src/routes/health.routes.js';
+import { errorHandler } from '../../src/middleware/errorHandler.js';
 
 describe('Health Check Endpoint (Integration)', () => {
   let app: express.Application;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let parseServer: any;
+  let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
-    // Create a minimal Express app for testing the health endpoint
+    // Start in-memory MongoDB server
+    mongoServer = await MongoMemoryServer.create();
+    const mongoUri = mongoServer.getUri();
+
+    // Override DB_URI with in-memory MongoDB URI
+    process.env.DB_URI = mongoUri;
+
+    // Create Express app
     app = express();
-    app.get(ROUTES.HEALTH, (_req, res) => {
-      res.status(HTTP_STATUS.OK).json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || ENVIRONMENTS.DEVELOPMENT,
-      });
-    });
+    app.use(express.json());
+
+    // Initialize Parse Server with in-memory MongoDB
+    const testConfig = {
+      databaseURI: mongoUri,
+      cloud: () => import('../../cloud/main.js'),
+      appId: process.env.APP_ID,
+      masterKey: process.env.MASTER_KEY,
+      serverURL: process.env.SERVER_URL,
+      schema: {
+        definitions: schemaDefinitions,
+        lockSchemas: true,
+        strict: true,
+        recreateModifiedFields: false,
+        deleteExtraFields: false,
+      },
+      maxUploadSize: MAX_GLOBAL_UPLOAD_SIZE_MB,
+      logLevel: 'error', // Suppress info logs in tests
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parseServer = new (ParseServer as any)(testConfig);
+    await parseServer.start();
+    app.use(ROUTES.PARSE, parseServer.app);
+
+    // Initialize Parse SDK
+    Parse.initialize(process.env.APP_ID!, undefined as unknown as string);
+    Parse.masterKey = process.env.MASTER_KEY!;
+    Parse.serverURL = process.env.SERVER_URL!;
+
+    // Register health routes
+    app.use(healthRoutes);
+    app.use(errorHandler);
   });
 
-  it('should return 200 status code', async () => {
+  afterAll(async () => {
+    try {
+      if (parseServer && typeof parseServer.handleShutdown === 'function') {
+        await parseServer.handleShutdown();
+      }
+    } catch {
+      // Ignore shutdown errors
+    }
+    await mongoServer.stop();
+  });
+
+  it('should return 200 status code when healthy', async () => {
     const response = await request(app).get(ROUTES.HEALTH);
     expect(response.status).toBe(HTTP_STATUS.OK);
   });
 
-  it('should return health check data', async () => {
+  it('should return health check data with all required fields', async () => {
     const response = await request(app).get(ROUTES.HEALTH);
-    expect(response.body).toHaveProperty('status', 'ok');
+    expect(response.body).toHaveProperty('status');
+    expect(['ok', 'degraded', 'error']).toContain(response.body.status);
     expect(response.body).toHaveProperty('timestamp');
     expect(response.body).toHaveProperty('uptime');
     expect(response.body).toHaveProperty('environment');
+    expect(response.body).toHaveProperty('version');
+    expect(response.body).toHaveProperty('checks');
   });
 
   it('should return valid timestamp', async () => {
@@ -49,5 +103,42 @@ describe('Health Check Endpoint (Integration)', () => {
     const response = await request(app).get(ROUTES.HEALTH);
     expect(response.body.environment).toBeDefined();
     expect(typeof response.body.environment).toBe('string');
+  });
+
+  it('should return version information', async () => {
+    const response = await request(app).get(ROUTES.HEALTH);
+    expect(response.body.version).toBeDefined();
+    expect(typeof response.body.version).toBe('string');
+  });
+
+  it('should include database health check', async () => {
+    const response = await request(app).get(ROUTES.HEALTH);
+    expect(response.body.checks).toHaveProperty('database');
+    expect(response.body.checks.database).toHaveProperty('status');
+    expect(['ok', 'error']).toContain(response.body.checks.database.status);
+    if (response.body.checks.database.status === 'ok') {
+      expect(response.body.checks.database).toHaveProperty('responseTime');
+      expect(typeof response.body.checks.database.responseTime).toBe('number');
+      expect(response.body.checks.database.responseTime).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should include Parse Server health check', async () => {
+    const response = await request(app).get(ROUTES.HEALTH);
+    expect(response.body.checks).toHaveProperty('parseServer');
+    expect(response.body.checks.parseServer).toHaveProperty('status');
+    expect(['ok', 'error']).toContain(response.body.checks.parseServer.status);
+    if (response.body.checks.parseServer.status === 'ok') {
+      expect(response.body.checks.parseServer).toHaveProperty('responseTime');
+      expect(typeof response.body.checks.parseServer.responseTime).toBe('number');
+      expect(response.body.checks.parseServer.responseTime).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should return status "ok" when all checks pass', async () => {
+    const response = await request(app).get(ROUTES.HEALTH);
+    if (response.body.checks.database.status === 'ok' && response.body.checks.parseServer.status === 'ok') {
+      expect(response.body.status).toBe('ok');
+    }
   });
 });

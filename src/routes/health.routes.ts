@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import path from 'path';
 import { readFileSync } from 'fs';
-import { Request, Response } from 'express';
-import { ROUTES, HTTP_STATUS } from '../../constants/index.js';
+import { Request, Response, NextFunction } from 'express';
+import { ROUTES, HTTP_STATUS, ENVIRONMENTS } from '../../constants/index.js';
 import { env } from '../utils/env.js';
+import { performHealthCheck } from '../services/health.service.js';
+import { ApplicationError } from '../middleware/errorHandler.js';
 
 const __dirname = path.resolve();
 
@@ -20,10 +22,10 @@ export const healthRoutes = Router();
  *   get:
  *     summary: Health check
  *     tags: [Health]
- *     description: Returns server health status and uptime
+ *     description: Returns comprehensive server health status including database and Parse Server connectivity
  *     responses:
  *       200:
- *         description: Server is healthy
+ *         description: Server health status
  *         content:
  *           application/json:
  *             schema:
@@ -31,6 +33,7 @@ export const healthRoutes = Router();
  *               properties:
  *                 status:
  *                   type: string
+ *                   enum: [ok, degraded, error]
  *                   example: ok
  *                 timestamp:
  *                   type: string
@@ -44,13 +47,43 @@ export const healthRoutes = Router();
  *                 version:
  *                   type: string
  *                   example: 1.0.0
+ *                 checks:
+ *                   type: object
+ *                   properties:
+ *                     database:
+ *                       type: object
+ *                       properties:
+ *                         status:
+ *                           type: string
+ *                           enum: [ok, error]
+ *                         message:
+ *                           type: string
+ *                         responseTime:
+ *                           type: number
+ *                           description: Response time in milliseconds
+ *                     parseServer:
+ *                       type: object
+ *                       properties:
+ *                         status:
+ *                           type: string
+ *                           enum: [ok, error]
+ *                         message:
+ *                           type: string
+ *                         responseTime:
+ *                           type: number
+ *                           description: Response time in milliseconds
+ *       503:
+ *         description: Service unavailable (when health checks fail)
  */
-healthRoutes.get(ROUTES.HEALTH, (_req: Request, res: Response) => {
-  res.status(HTTP_STATUS.OK).json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: env.NODE_ENV,
-    version: packageJson.version,
-  });
+healthRoutes.get(ROUTES.HEALTH, async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const healthCheck = await performHealthCheck(env.NODE_ENV || ENVIRONMENTS.DEVELOPMENT, packageJson.version);
+
+    // Return 503 if any critical check fails
+    const statusCode = healthCheck.status === 'error' ? HTTP_STATUS.SERVICE_UNAVAILABLE : HTTP_STATUS.OK;
+
+    res.status(statusCode).json(healthCheck);
+  } catch {
+    next(new ApplicationError('Health check failed', HTTP_STATUS.INTERNAL_SERVER_ERROR));
+  }
 });

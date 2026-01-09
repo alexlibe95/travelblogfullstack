@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import express from 'express';
 import { setupParse } from './parse.js';
-import { ROUTES } from '../../constants/index.js';
 
 // Mock ParseServer
 vi.mock('parse-server', () => {

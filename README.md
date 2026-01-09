@@ -239,17 +239,59 @@ Returns server information and available endpoints.
 ```
 GET /health
 ```
-Returns server health status.
+Returns comprehensive server health status including database and Parse Server connectivity checks.
 
-**Response**:
+**Response** (200 OK - Healthy):
 ```json
 {
   "status": "ok",
   "timestamp": "2026-01-09T14:30:00.000Z",
   "uptime": 1234.56,
-  "environment": "development"
+  "environment": "development",
+  "version": "1.0.0",
+  "checks": {
+    "database": {
+      "status": "ok",
+      "responseTime": 12
+    },
+    "parseServer": {
+      "status": "ok",
+      "responseTime": 15
+    }
+  }
 }
 ```
+
+**Response** (503 Service Unavailable - Unhealthy):
+```json
+{
+  "status": "error",
+  "timestamp": "2026-01-09T14:30:00.000Z",
+  "uptime": 1234.56,
+  "environment": "development",
+  "version": "1.0.0",
+  "checks": {
+    "database": {
+      "status": "error",
+      "message": "Database connection failed",
+      "responseTime": 5000
+    },
+    "parseServer": {
+      "status": "ok",
+      "responseTime": 15
+    }
+  }
+}
+```
+
+**Status Values**:
+- `ok` - All checks passed
+- `degraded` - Some checks passed but not all
+- `error` - Critical checks failed (returns 503)
+
+**Health Checks**:
+- **Database**: Verifies MongoDB connectivity by performing a lightweight query
+- **Parse Server**: Verifies Parse Server is initialized and responding to requests
 
 ### API Endpoints
 
