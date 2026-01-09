@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { Request, Response, NextFunction } from 'express';
-import { securityHeaders, corsMiddleware } from '../middleware/security.js';
+import { securityHeaders, corsMiddleware, rateLimitMiddleware } from '../middleware/security.js';
 import { errorHandler, notFoundHandler } from '../middleware/errorHandler.js';
 import { setupParse } from './parse.js';
 import { setupDashboard } from './dashboard.js';
@@ -16,6 +16,7 @@ export async function createServer() {
   // Security
   app.use(securityHeaders);
   app.use(corsMiddleware);
+  app.use(rateLimitMiddleware);
 
   // Body parsing (exclude dashboard)
   app.use((req: Request, res: Response, next: NextFunction) => {

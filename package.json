@@ -21,6 +21,7 @@
   "dependencies": {
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
     "multer": "^2.0.2",
     "parse": "^8.0.0",
     "parse-dashboard": "^5.4.0",

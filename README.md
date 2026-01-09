@@ -470,6 +470,12 @@ The application uses Parse Server's schema management system. Schemas are define
 - `X-XSS-Protection: 1; mode=block` - XSS protection
 - `Referrer-Policy: strict-origin-when-cross-origin` - Referrer policy
 
+### Rate Limiting
+- **Development**: 1000 requests per 15 minutes per IP
+- **Production**: 100 requests per 15 minutes per IP
+- **Excluded Routes**: Health checks (`/health`), Dashboard (`/dashboard/*`), and API docs (`/api-docs`) are excluded from rate limiting
+- **Note**: For production with multiple servers, consider using Redis store for distributed rate limiting
+
 ### Error Handling
 - Prevents information leakage in production
 - Stack traces only shown in development

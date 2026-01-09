@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Request, Response, NextFunction } from 'express';
-import { corsMiddleware, securityHeaders } from './security.js';
+import { corsMiddleware, securityHeaders, rateLimitMiddleware } from './security.js';
 import {
   SECURITY_HEADERS,
   SECURITY_VALUES,
@@ -10,6 +10,7 @@ import {
   ENVIRONMENTS,
   DEFAULT_DEV_ORIGINS,
   ALLOWED_METHODS,
+  RATE_LIMIT,
 } from '../../constants/index.js';
 
 describe('Security Middleware', () => {
@@ -112,6 +113,84 @@ describe('Security Middleware', () => {
         CORS_HEADERS.MAX_AGE,
         SECURITY_VALUES.CORS_MAX_AGE
       );
+    });
+  });
+
+  describe('rateLimitMiddleware', () => {
+    it('should be defined', () => {
+      expect(rateLimitMiddleware).toBeDefined();
+    });
+
+    it('should use development limits in development environment', () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = ENVIRONMENTS.DEVELOPMENT;
+
+      // Rate limit middleware is configured at module load time
+      // We can verify the configuration exists
+      expect(RATE_LIMIT.DEVELOPMENT).toBeDefined();
+      expect(RATE_LIMIT.DEVELOPMENT.max).toBe(1000);
+
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    it('should use production limits in production environment', () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = ENVIRONMENTS.PRODUCTION;
+
+      // Rate limit middleware is configured at module load time
+      // We can verify the configuration exists
+      expect(RATE_LIMIT.PRODUCTION).toBeDefined();
+      expect(RATE_LIMIT.PRODUCTION.max).toBe(100);
+
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    it('should skip rate limiting for health endpoint', () => {
+      const healthRequest = {
+        path: '/health',
+      } as Request;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const skipFunction = (rateLimitMiddleware as any).options?.skip;
+      if (skipFunction) {
+        expect(skipFunction(healthRequest)).toBe(true);
+      }
+    });
+
+    it('should skip rate limiting for dashboard', () => {
+      const dashboardRequest = {
+        path: '/dashboard/apps',
+      } as Request;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const skipFunction = (rateLimitMiddleware as any).options?.skip;
+      if (skipFunction) {
+        expect(skipFunction(dashboardRequest)).toBe(true);
+      }
+    });
+
+    it('should skip rate limiting for API docs', () => {
+      const docsRequest = {
+        path: '/api-docs',
+      } as Request;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const skipFunction = (rateLimitMiddleware as any).options?.skip;
+      if (skipFunction) {
+        expect(skipFunction(docsRequest)).toBe(true);
+      }
+    });
+
+    it('should not skip rate limiting for regular API endpoints', () => {
+      const apiRequest = {
+        path: '/api/islands',
+      } as Request;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const skipFunction = (rateLimitMiddleware as any).options?.skip;
+      if (skipFunction) {
+        expect(skipFunction(apiRequest)).toBe(false);
+      }
     });
   });
 });

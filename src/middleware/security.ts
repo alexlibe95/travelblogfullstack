@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import rateLimit from 'express-rate-limit';
 import { env } from '../utils/env.js';
 import {
   CORS_HEADERS,
@@ -9,6 +10,7 @@ import {
   ENVIRONMENTS,
   DEFAULT_DEV_ORIGINS,
   HTTP_METHODS,
+  RATE_LIMIT,
 } from '../../constants/index.js';
 
 /**
@@ -75,11 +77,20 @@ export function securityHeaders(_req: Request, res: Response, next: NextFunction
 }
 
 /**
- * Rate limiting configuration
- * Note: For production, consider using express-rate-limit with Redis
+ * Rate limiting middleware
+ * Uses express-rate-limit with different limits for development and production
+ * In production with multiple servers, consider using Redis store
  */
-export function rateLimitMiddleware(_req: Request, res: Response, next: NextFunction): void {
-  // Basic rate limiting - in production, use express-rate-limit with Redis
-  // This is a placeholder for the concept
-  next();
-}
+export const rateLimitMiddleware = rateLimit({
+  ...(process.env.NODE_ENV === ENVIRONMENTS.PRODUCTION
+    ? RATE_LIMIT.PRODUCTION
+    : RATE_LIMIT.DEVELOPMENT),
+  // Skip rate limiting for health checks and dashboard
+  skip: (req: Request) => {
+    return (
+      req.path === '/health' ||
+      req.path.startsWith('/dashboard') ||
+      req.path.startsWith('/api-docs')
+    );
+  },
+});
