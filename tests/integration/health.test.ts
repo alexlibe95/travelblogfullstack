@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 import { HTTP_STATUS, ENVIRONMENTS, ROUTES } from '../../constants/index.js';
@@ -17,10 +17,6 @@ describe('Health Check Endpoint (Integration)', () => {
         environment: process.env.NODE_ENV || ENVIRONMENTS.DEVELOPMENT,
       });
     });
-  });
-
-  afterAll(() => {
-    // Cleanup if needed
   });
 
   it('should return 200 status code', async () => {

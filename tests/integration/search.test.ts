@@ -11,6 +11,7 @@ import {
   ISLAND_FIELDS,
   API_RESPONSE_KEYS,
   ERROR_RESPONSE_KEYS,
+  MAX_GLOBAL_UPLOAD_SIZE_MB,
 } from '../../constants/index.js';
 import { schemaDefinitions } from '../../cloud/schema.js';
 import { corsMiddleware, securityHeaders } from '../../src/middleware/security.js';
@@ -28,16 +29,8 @@ describe('Search API Endpoints (Integration)', () => {
     mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();
 
-    // Set up test environment variables
+    // Override DB_URI with in-memory MongoDB URI (other env vars are set in tests/setup.ts)
     process.env.DB_URI = mongoUri;
-    process.env.APP_ID = 'test-app-id';
-    process.env.MASTER_KEY = 'test-master-key';
-    process.env.SERVER_URL = 'http://localhost:1337';
-    process.env.APP_NAME = 'Test App';
-    process.env.APP_USER = 'testuser';
-    process.env.APP_PASS = 'testpass';
-    process.env.SERVER_PORT = '1337';
-    process.env.NODE_ENV = 'test';
 
     // Create Express app
     app = express();
@@ -62,9 +55,7 @@ describe('Search API Endpoints (Integration)', () => {
         recreateModifiedFields: false,
         deleteExtraFields: false,
       },
-      maxUploadSize: '5mb',
-      // Suppress info-level logs during tests
-      logLevel: 'error',
+      maxUploadSize: MAX_GLOBAL_UPLOAD_SIZE_MB
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parseServer = new (ParseServer as any)(testConfig);
@@ -72,8 +63,9 @@ describe('Search API Endpoints (Integration)', () => {
     app.use(ROUTES.PARSE, parseServer.app);
 
     // Initialize Parse SDK for test data setup
-    Parse.initialize(process.env.APP_ID, process.env.MASTER_KEY);
-    Parse.serverURL = process.env.SERVER_URL;
+    Parse.initialize(process.env.APP_ID!, undefined as unknown as string);
+    Parse.masterKey = process.env.MASTER_KEY!;
+    Parse.serverURL = process.env.SERVER_URL!;
 
     // Create test islands with diverse content for searching
     const TestIsland = Parse.Object.extend(ISLAND_CLASS_NAME);
