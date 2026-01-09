@@ -19,6 +19,7 @@
   "dependencies": {
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "multer": "^2.0.2",
     "parse": "^8.0.0",
     "parse-dashboard": "^5.4.0",
     "parse-server": "^9.1.1",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.5",
     "@eslint/js": "^9.39.2",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.10.4",
     "@types/parse": "^3.0.9",
     "@types/supertest": "^6.0.2",

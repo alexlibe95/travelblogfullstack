@@ -165,7 +165,7 @@ describe('Islands API Endpoints (Integration)', () => {
     testIslandId = mockIslands[0].id;
 
     // Mount API routes (replicate controller behavior - but use schema field names)
-    app.get(ROUTES.ISLANDS, async (_req, res, next) => {
+    app.get(ROUTES.API.ISLANDS, async (_req, res, next) => {
       try {
         const query = new Parse.Query(ISLAND_CLASS_NAME);
         query.ascending(ISLAND_FIELDS.ORDER);
@@ -186,7 +186,7 @@ describe('Islands API Endpoints (Integration)', () => {
       }
     });
 
-    app.get(`${ROUTES.ISLANDS}/:id`, async (req, res, next) => {
+    app.get(`${ROUTES.API.ISLANDS}/:id`, async (req, res, next) => {
       try {
         const { id } = req.params;
         if (!id) {
@@ -236,19 +236,19 @@ describe('Islands API Endpoints (Integration)', () => {
 
   describe('GET /api/islands', () => {
     it('should return 200 status code', async () => {
-      const response = await request(app).get(ROUTES.ISLANDS);
+      const response = await request(app).get(ROUTES.API.ISLANDS);
       expect(response.status).toBe(HTTP_STATUS.OK);
     });
 
     it('should return success response structure', async () => {
-      const response = await request(app).get(ROUTES.ISLANDS);
+      const response = await request(app).get(ROUTES.API.ISLANDS);
       expect(response.body).toHaveProperty(API_RESPONSE_KEYS.SUCCESS, true);
       expect(response.body).toHaveProperty(API_RESPONSE_KEYS.DATA);
       expect(Array.isArray(response.body[API_RESPONSE_KEYS.DATA])).toBe(true);
     });
 
     it('should return islands sorted by order', async () => {
-      const response = await request(app).get(ROUTES.ISLANDS);
+      const response = await request(app).get(ROUTES.API.ISLANDS);
       const islands = response.body[API_RESPONSE_KEYS.DATA];
 
       expect(islands.length).toBeGreaterThanOrEqual(3);
@@ -258,7 +258,7 @@ describe('Islands API Endpoints (Integration)', () => {
     });
 
     it('should return only basic fields for list view', async () => {
-      const response = await request(app).get(ROUTES.ISLANDS);
+      const response = await request(app).get(ROUTES.API.ISLANDS);
       const island = response.body[API_RESPONSE_KEYS.DATA][0];
 
       expect(island).toBeDefined();
@@ -275,14 +275,14 @@ describe('Islands API Endpoints (Integration)', () => {
     });
 
     it('should return count matching data array length', async () => {
-      const response = await request(app).get(ROUTES.ISLANDS);
+      const response = await request(app).get(ROUTES.API.ISLANDS);
       // Controller returns data directly, no count field
       expect(Array.isArray(response.body[API_RESPONSE_KEYS.DATA])).toBe(true);
       expect(response.body[API_RESPONSE_KEYS.DATA].length).toBe(3);
     });
 
     it('should return correct mock data', async () => {
-      const response = await request(app).get(ROUTES.ISLANDS);
+      const response = await request(app).get(ROUTES.API.ISLANDS);
       const islands = response.body[API_RESPONSE_KEYS.DATA];
 
       // Check that we have the expected islands (schema uses 'name' field)
@@ -295,19 +295,19 @@ describe('Islands API Endpoints (Integration)', () => {
 
   describe('GET /api/islands/:id', () => {
     it('should return 200 status code for valid island ID', async () => {
-      const response = await request(app).get(`${ROUTES.ISLANDS}/${testIslandId}`);
+      const response = await request(app).get(`${ROUTES.API.ISLANDS}/${testIslandId}`);
       expect(response.status).toBe(HTTP_STATUS.OK);
     });
 
     it('should return success response structure', async () => {
-      const response = await request(app).get(`${ROUTES.ISLANDS}/${testIslandId}`);
+      const response = await request(app).get(`${ROUTES.API.ISLANDS}/${testIslandId}`);
       expect(response.body).toHaveProperty(API_RESPONSE_KEYS.SUCCESS, true);
       expect(response.body).toHaveProperty(API_RESPONSE_KEYS.DATA);
       expect(typeof response.body[API_RESPONSE_KEYS.DATA]).toBe('object');
     });
 
     it('should return full island details', async () => {
-      const response = await request(app).get(`${ROUTES.ISLANDS}/${testIslandId}`);
+      const response = await request(app).get(`${ROUTES.API.ISLANDS}/${testIslandId}`);
       const island = response.body[API_RESPONSE_KEYS.DATA];
 
       expect(island).toHaveProperty('objectId');
@@ -324,7 +324,7 @@ describe('Islands API Endpoints (Integration)', () => {
     });
 
     it('should return correct island data', async () => {
-      const response = await request(app).get(`${ROUTES.ISLANDS}/${testIslandId}`);
+      const response = await request(app).get(`${ROUTES.API.ISLANDS}/${testIslandId}`);
       const island = response.body[API_RESPONSE_KEYS.DATA];
 
       expect(island.objectId).toBe(testIslandId);
@@ -338,13 +338,13 @@ describe('Islands API Endpoints (Integration)', () => {
 
     it('should return 404 for non-existent island ID', async () => {
       const fakeId = 'nonexistent123';
-      const response = await request(app).get(`${ROUTES.ISLANDS}/${fakeId}`);
+      const response = await request(app).get(`${ROUTES.API.ISLANDS}/${fakeId}`);
       expect(response.status).toBe(HTTP_STATUS.NOT_FOUND);
     });
 
     it('should return error structure for 404', async () => {
       const fakeId = 'nonexistent123';
-      const response = await request(app).get(`${ROUTES.ISLANDS}/${fakeId}`);
+      const response = await request(app).get(`${ROUTES.API.ISLANDS}/${fakeId}`);
       expect(response.body).toHaveProperty(ERROR_RESPONSE_KEYS.ERROR);
       expect(response.body[ERROR_RESPONSE_KEYS.ERROR]).toHaveProperty(ERROR_RESPONSE_KEYS.MESSAGE);
       expect(response.body[ERROR_RESPONSE_KEYS.ERROR]).toHaveProperty(
@@ -354,7 +354,7 @@ describe('Islands API Endpoints (Integration)', () => {
     });
 
     it('should return valid timestamps', async () => {
-      const response = await request(app).get(`${ROUTES.ISLANDS}/${testIslandId}`);
+      const response = await request(app).get(`${ROUTES.API.ISLANDS}/${testIslandId}`);
       const island = response.body[API_RESPONSE_KEYS.DATA];
 
       const createdAt = new Date(island.createdAt);

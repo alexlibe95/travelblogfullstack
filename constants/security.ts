@@ -1,7 +1,3 @@
-/**
- * Security-related constants
- */
-
 export const HTTP_METHODS = {
   GET: 'GET',
   POST: 'POST',
@@ -26,6 +22,7 @@ export const SECURITY_HEADERS = {
   REFERRER_POLICY: 'Referrer-Policy',
   CONTENT_SECURITY_POLICY: 'Content-Security-Policy',
   STRICT_TRANSPORT_SECURITY: 'Strict-Transport-Security',
+  X_PARSE_SESSION_TOKEN: 'x-parse-session-token',
 } as const;
 
 export const SECURITY_VALUES = {

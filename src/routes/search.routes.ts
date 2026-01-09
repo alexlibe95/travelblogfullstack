@@ -4,4 +4,4 @@ import { ROUTES } from '../../constants/index.js';
 
 export const searchRoutes = Router();
 
-searchRoutes.get(`${ROUTES.SEARCH}`, searchIslands);
+searchRoutes.get(ROUTES.API.SEARCH, searchIslands);

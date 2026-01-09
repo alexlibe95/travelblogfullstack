@@ -11,6 +11,7 @@ export async function setupParse(app: Application) {
 
   app.use(ROUTES.PARSE, parseServer.app);
 
-  Parse.initialize(env.APP_ID, env.MASTER_KEY);
+  Parse.initialize(env.APP_ID, undefined as unknown as string);
+  Parse.masterKey = env.MASTER_KEY;
   Parse.serverURL = env.SERVER_URL;
 }

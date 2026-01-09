@@ -12,8 +12,12 @@ rootRoutes.get(ROUTES.ROOT, (_req: Request, res: Response) => {
       dashboard: ROUTES.DASHBOARD,
       health: ROUTES.HEALTH,
       api: {
-        islands: ROUTES.ISLANDS,
-        search: ROUTES.SEARCH,
+        islands: ROUTES.API.ISLANDS,
+        search: ROUTES.API.SEARCH,
+        auth: {
+          login: ROUTES.API.AUTH.LOGIN,
+          logout: ROUTES.API.AUTH.LOGOUT,
+        },
       },
     },
   });

@@ -4,5 +4,5 @@ import { ROUTES } from '../../constants/index.js';
 
 export const authRoutes = Router();
 
-authRoutes.post(ROUTES.AUTH.LOGIN, login);
-authRoutes.post(ROUTES.AUTH.LOGOUT, logout);
+authRoutes.post(ROUTES.API.AUTH.LOGIN, login);
+authRoutes.post(ROUTES.API.AUTH.LOGOUT, logout);

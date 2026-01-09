@@ -1,7 +1,3 @@
-/**
- * HTTP-related constants
- */
-
 export const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,

@@ -144,7 +144,7 @@ describe('Search API Endpoints (Integration)', () => {
     );
 
     // Mount search route
-    app.get(ROUTES.SEARCH, searchIslands);
+    app.get(ROUTES.API.SEARCH, searchIslands);
 
     // Add error handlers
     app.use(notFoundHandler);
@@ -168,26 +168,26 @@ describe('Search API Endpoints (Integration)', () => {
 
   describe('GET /api/search', () => {
     it('should return 400 when query parameter is missing', async () => {
-      const response = await request(app).get(ROUTES.SEARCH);
+      const response = await request(app).get(ROUTES.API.SEARCH);
       expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST);
       expect(response.body).toHaveProperty(ERROR_RESPONSE_KEYS.ERROR);
       expect(response.body[ERROR_RESPONSE_KEYS.ERROR]).toHaveProperty(ERROR_RESPONSE_KEYS.MESSAGE);
     });
 
     it('should return 400 when query parameter is empty', async () => {
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=`);
       expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST);
       expect(response.body).toHaveProperty(ERROR_RESPONSE_KEYS.ERROR);
     });
 
     it('should return 400 when query parameter is only whitespace', async () => {
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=   `);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=   `);
       expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST);
       expect(response.body).toHaveProperty(ERROR_RESPONSE_KEYS.ERROR);
     });
 
     it('should return success response structure', async () => {
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=Santorini`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=Santorini`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       expect(response.body).toHaveProperty(API_RESPONSE_KEYS.SUCCESS, true);
       expect(response.body).toHaveProperty(API_RESPONSE_KEYS.COUNT);
@@ -196,7 +196,7 @@ describe('Search API Endpoints (Integration)', () => {
     });
 
     it('should search by island name', async () => {
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=Santorini`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=Santorini`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       expect(response.body[API_RESPONSE_KEYS.COUNT]).toBeGreaterThan(0);
       const names = response.body[API_RESPONSE_KEYS.DATA].map(
@@ -206,7 +206,7 @@ describe('Search API Endpoints (Integration)', () => {
     });
 
     it('should search by short_description', async () => {
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=tropical`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=tropical`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       expect(response.body[API_RESPONSE_KEYS.COUNT]).toBeGreaterThan(0);
       const names = response.body[API_RESPONSE_KEYS.DATA].map(
@@ -216,7 +216,7 @@ describe('Search API Endpoints (Integration)', () => {
     });
 
     it('should search by description', async () => {
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=volcanic`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=volcanic`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       expect(response.body[API_RESPONSE_KEYS.COUNT]).toBeGreaterThan(0);
       const names = response.body[API_RESPONSE_KEYS.DATA].map(
@@ -227,7 +227,7 @@ describe('Search API Endpoints (Integration)', () => {
 
     it('should return results from multiple fields', async () => {
       // "Greek" appears in both "Greek Islands" name and "Santorini" description
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=Greek`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=Greek`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       expect(response.body[API_RESPONSE_KEYS.COUNT]).toBeGreaterThanOrEqual(2);
       const names = response.body[API_RESPONSE_KEYS.DATA].map(
@@ -238,7 +238,7 @@ describe('Search API Endpoints (Integration)', () => {
     });
 
     it('should return only id and name fields', async () => {
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=Santorini`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=Santorini`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       const island = response.body[API_RESPONSE_KEYS.DATA][0];
       expect(island).toHaveProperty('id');
@@ -247,7 +247,7 @@ describe('Search API Endpoints (Integration)', () => {
     });
 
     it('should return empty results for non-matching query', async () => {
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=NonexistentIsland123`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=NonexistentIsland123`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       expect(response.body[API_RESPONSE_KEYS.SUCCESS]).toBe(true);
       expect(response.body[API_RESPONSE_KEYS.COUNT]).toBe(0);
@@ -257,7 +257,7 @@ describe('Search API Endpoints (Integration)', () => {
 
     it('should handle case-sensitive search', async () => {
       // contains() is case-sensitive, so "santorini" (lowercase) should not match "Santorini"
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=santorini`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=santorini`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       // This test documents the current behavior - case-sensitive search
       // If case-insensitive search is needed, the controller would need to be updated
@@ -266,7 +266,7 @@ describe('Search API Endpoints (Integration)', () => {
 
     it('should handle partial word matches', async () => {
       // Search is case-sensitive, so "Beautiful" (capital B) matches Santorini
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=Beautiful`);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=Beautiful`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       expect(response.body[API_RESPONSE_KEYS.COUNT]).toBeGreaterThan(0);
       const names = response.body[API_RESPONSE_KEYS.DATA].map(
@@ -276,7 +276,7 @@ describe('Search API Endpoints (Integration)', () => {
     });
 
     it('should trim whitespace from search query', async () => {
-      const response = await request(app).get(`${ROUTES.SEARCH}?q=  Santorini  `);
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=  Santorini  `);
       expect(response.status).toBe(HTTP_STATUS.OK);
       expect(response.body[API_RESPONSE_KEYS.COUNT]).toBeGreaterThan(0);
       const names = response.body[API_RESPONSE_KEYS.DATA].map(

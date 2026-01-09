@@ -1,5 +1,5 @@
 import { schemaDefinitions } from './cloud/schema.js';
-import { ENVIRONMENTS } from './constants/index.js';
+import { ENVIRONMENTS, MAX_GLOBAL_UPLOAD_SIZE_MB } from './constants/index.js';
 import { env } from './src/utils/env.js';
 
 export const config = {
@@ -22,7 +22,7 @@ export const config = {
   },
 
   // File upload limits
-  maxUploadSize: '5mb',
+  maxUploadSize: MAX_GLOBAL_UPLOAD_SIZE_MB,
 
   // Production-ready Parse Server options
   ...(env.NODE_ENV === ENVIRONMENTS.PRODUCTION && {

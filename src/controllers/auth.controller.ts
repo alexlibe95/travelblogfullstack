@@ -1,7 +1,7 @@
 import Parse from 'parse/node.js';
-import { HTTP_STATUS } from '../../constants/index.js';
-import { ApplicationError } from '../middleware/errorHandler.js';
 import { NextFunction, Request, Response } from 'express';
+import { HTTP_STATUS, SECURITY_HEADERS } from '../../constants/index.js';
+import { ApplicationError } from '../middleware/errorHandler.js';
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
@@ -28,7 +28,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
 export async function logout(req: Request, res: Response, next: NextFunction) {
   try {
-    const sessionToken = req.headers['x-parse-session-token'] as string;
+    const sessionToken = req.headers[SECURITY_HEADERS.X_PARSE_SESSION_TOKEN] as string;
 
     if (!sessionToken) {
       throw new ApplicationError('Missing session token', HTTP_STATUS.UNAUTHORIZED);
