@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { createServer } from './src/server/app.js';
 import { env } from './src/utils/env.js';
 import { logger } from './src/utils/logger.js';
+import { setupShutdownHandlers } from './src/utils/shutdown.js';
 
 const app = await createServer();
 
@@ -14,18 +15,5 @@ const server = app.listen(port, () => {
   logger.info(`📚 API Documentation running on http://localhost:${port}/api-docs`);
 });
 
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received. Shutting down gracefully...');
-  server.close(() => {
-    logger.info('Server closed successfully');
-    process.exit(0);
-  });
-});
-
-process.on('SIGINT', () => {
-  logger.info('SIGINT received. Shutting down gracefully...');
-  server.close(() => {
-    logger.info('Server closed successfully');
-    process.exit(0);
-  });
-});
+// Setup graceful shutdown handlers
+setupShutdownHandlers(server);

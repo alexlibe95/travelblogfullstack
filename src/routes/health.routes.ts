@@ -6,6 +6,7 @@ import { ROUTES, HTTP_STATUS, ENVIRONMENTS } from '../../constants/index.js';
 import { env } from '../utils/env.js';
 import { performHealthCheck } from '../services/health.service.js';
 import { ApplicationError } from '../middleware/errorHandler.js';
+import { logger } from '../utils/logger.js';
 
 const __dirname = path.resolve();
 
@@ -83,7 +84,9 @@ healthRoutes.get(ROUTES.HEALTH, async (_req: Request, res: Response, next: NextF
     const statusCode = healthCheck.status === 'error' ? HTTP_STATUS.SERVICE_UNAVAILABLE : HTTP_STATUS.OK;
 
     res.status(statusCode).json(healthCheck);
-  } catch {
+  } catch (error) {
+    // Log the error for debugging
+    logger.error({ error }, 'Health check endpoint error');
     next(new ApplicationError('Health check failed', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 });
