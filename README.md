@@ -187,7 +187,9 @@ travelblogfullstack/
 | `npm test` | Run tests in watch mode |
 | `npm run test:run` | Run tests once (CI mode) |
 | `npm run test:ui` | Run tests with Vitest UI |
-| `npm run test:coverage` | Run tests with coverage report |
+| `npm run test:coverage` | Run tests with coverage report (text, JSON, HTML) |
+| `npm run test:coverage:open` | Run tests with coverage and open HTML report (macOS/Linux: `open`, Windows: manually open `coverage/index.html`) |
+| `npm run test:coverage:watch` | Run tests with coverage in watch mode |
 | `npm run lint` | Run ESLint to check code quality |
 | `npm run lint:fix` | Fix ESLint errors automatically |
 | `npm run format` | Format code with Prettier |
@@ -486,6 +488,24 @@ The project includes comprehensive tests for:
 - ✅ Environment validation
 - ✅ All API endpoints (auth, islands, search, health, root)
 - ✅ Error handling scenarios
+- ✅ Server setup functions
+- ✅ Image processing utilities
+
+**Current Coverage**: ~85% overall
+
+**View Coverage Reports**:
+```bash
+# Generate coverage report
+npm run test:coverage
+
+# Open HTML coverage report
+npm run test:coverage:open  # macOS/Linux
+# Or manually open coverage/index.html in your browser
+
+# Coverage report is generated in coverage/ directory:
+# - coverage/index.html - Interactive HTML report
+# - coverage/coverage-final.json - JSON report
+```
 
 See `tests/README.md` for detailed testing documentation.
 
