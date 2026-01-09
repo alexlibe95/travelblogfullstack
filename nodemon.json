@@ -1,7 +1,0 @@
-{
-  "ignore": ["dist"],
-  "ext": "json,ts,mjs,cjs,js",
-  "execMap": {
-    "ts": "tsx"
-  }
-}
