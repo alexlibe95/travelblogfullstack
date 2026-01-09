@@ -2,6 +2,7 @@ import Parse from 'parse/node.js';
 import { NextFunction, Request, Response } from 'express';
 import { HTTP_STATUS, SECURITY_HEADERS } from '../../constants/index.js';
 import { ApplicationError } from '../middleware/errorHandler.js';
+import { logger } from '../utils/logger.js';
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
@@ -28,7 +29,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       return;
     }
     // Log unexpected errors for debugging (but don't expose details to client)
-    console.error('Login failed:', error);
+    logger.error({ error }, 'Login failed');
     next(new ApplicationError('Invalid username or password', HTTP_STATUS.UNAUTHORIZED));
   }
 }
@@ -63,7 +64,7 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
       return;
     }
     // Log the actual error for debugging
-    console.error('Logout error:', error);
+    logger.error({ error }, 'Logout error');
     next(new ApplicationError('Logout failed', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 }

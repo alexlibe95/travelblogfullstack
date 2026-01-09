@@ -9,6 +9,7 @@ import {
   ISLAND_EDITABLE_FIELDS,
 } from '../../constants/index.js';
 import { ApplicationError } from '../middleware/errorHandler.js';
+import { logger } from '../utils/logger.js';
 
 export async function getIslands(_req: Request, res: Response, next: NextFunction) {
   try {
@@ -29,7 +30,7 @@ export async function getIslands(_req: Request, res: Response, next: NextFunctio
       return;
     }
     // Log unexpected errors for debugging
-    console.error('Failed to fetch islands:', error);
+    logger.error({ error }, 'Failed to fetch islands');
     next(new ApplicationError('Failed to fetch islands', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 }
@@ -58,15 +59,14 @@ export async function getIslandById(req: Request, res: Response, next: NextFunct
       return;
     }
     // Log unexpected errors for debugging
-    console.error('Failed to fetch island:', error);
+    logger.error({ error, islandId: req.params.id }, 'Failed to fetch island');
     next(new ApplicationError('Island not found', HTTP_STATUS.NOT_FOUND));
   }
 }
 
 export async function updateIsland(req: Request, res: Response, next: NextFunction) {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-
     const query = new Parse.Query(ISLAND_CLASS_NAME);
     const island = await query.get(id, { useMasterKey: true });
 
@@ -101,15 +101,14 @@ export async function updateIsland(req: Request, res: Response, next: NextFuncti
       return;
     }
     // Log unexpected errors for debugging
-    console.error('Failed to update island:', error);
+    logger.error({ error, islandId: id }, 'Failed to update island');
     next(new ApplicationError('Failed to update island', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 }
 
 export async function uploadIslandPhoto(req: Request, res: Response, next: NextFunction) {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-
     if (!req.file) {
       throw new ApplicationError('Photo file is required', HTTP_STATUS.BAD_REQUEST);
     }
@@ -149,7 +148,7 @@ export async function uploadIslandPhoto(req: Request, res: Response, next: NextF
       return;
     }
     // Log unexpected errors for debugging
-    console.error('Failed to upload photo:', error);
+    logger.error({ error, islandId: id }, 'Failed to upload photo');
     next(new ApplicationError('Failed to upload photo', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 }

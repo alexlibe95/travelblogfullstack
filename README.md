@@ -14,6 +14,7 @@ A production-ready Parse Server backend for a Travel Blog application, built wit
 
 ### Production Features
 - **Environment Validation** - Validates all required configuration at startup
+- **Structured Logging** - Fast, structured logging with Pino (JSON in production, pretty in development)
 - **Error Handling** - Comprehensive error handling middleware with proper error responses
 - **Security** - CORS, security headers, and secure configuration
 - **Health Monitoring** - Health check endpoint for monitoring and load balancers
@@ -70,6 +71,9 @@ APP_PASS=your-secure-password-here
 # Server Configuration
 SERVER_PORT=5000
 NODE_ENV=development
+
+# Optional: Logging
+LOG_LEVEL=debug  # Options: trace, debug, info, warn, error, fatal (default: info in production, debug in development)
 
 # Optional: Image Processing
 THUMB_WIDTH=300
@@ -480,6 +484,20 @@ The application uses Parse Server's schema management system. Schemas are define
 - Prevents information leakage in production
 - Stack traces only shown in development
 - Consistent error response format
+
+### Logging
+- **Structured Logging** - Uses Pino for fast, structured JSON logging
+- **Development Mode** - Pretty-printed logs with colors for easier debugging
+- **Production Mode** - JSON logs optimized for log aggregation tools (ELK, CloudWatch, etc.)
+- **Log Levels** - Configurable via `LOG_LEVEL` environment variable:
+  - `trace` - Very detailed debugging information
+  - `debug` - Debug information (default in development)
+  - `info` - General information (default in production)
+  - `warn` - Warning messages
+  - `error` - Error messages
+  - `fatal` - Critical errors
+- **Contextual Logging** - All logs include relevant context (request IDs, user IDs, error details)
+- **Performance** - Pino is one of the fastest Node.js loggers, with minimal overhead
 
 ### Authentication
 - Session-based authentication

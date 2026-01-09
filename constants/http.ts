@@ -28,14 +28,6 @@ export const ERROR_RESPONSE_KEYS = {
   STACK: 'stack',
 } as const;
 
-export const LOG_KEYS = {
-  ERROR: 'Error:',
-  MESSAGE: 'message',
-  STATUS_CODE: 'statusCode',
-  STACK: 'stack',
-  IS_OPERATIONAL: 'isOperational',
-} as const;
-
 export const API_RESPONSE_KEYS = {
   SUCCESS: 'success',
   COUNT: 'count',

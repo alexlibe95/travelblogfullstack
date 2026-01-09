@@ -3,9 +3,9 @@ import {
   HTTP_STATUS,
   ERROR_MESSAGES,
   ERROR_RESPONSE_KEYS,
-  LOG_KEYS,
   ENVIRONMENTS,
 } from '../../constants/index.js';
+import { logger } from '../utils/logger.js';
 
 export interface AppError extends Error {
   statusCode?: number;
@@ -45,12 +45,15 @@ export function errorHandler(
   const isOperational = err.isOperational !== false;
 
   // Log error for debugging
-  console.error(LOG_KEYS.ERROR, {
-    [LOG_KEYS.MESSAGE]: err.message,
-    [LOG_KEYS.STATUS_CODE]: statusCode,
-    [LOG_KEYS.STACK]: process.env.NODE_ENV === ENVIRONMENTS.DEVELOPMENT ? err.stack : undefined,
-    [LOG_KEYS.IS_OPERATIONAL]: isOperational,
-  });
+  logger.error(
+    {
+      message: err.message,
+      statusCode,
+      stack: process.env.NODE_ENV === ENVIRONMENTS.DEVELOPMENT ? err.stack : undefined,
+      isOperational,
+    },
+    'Error occurred'
+  );
 
   // Don't expose internal errors in production
   const message =

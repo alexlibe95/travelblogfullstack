@@ -2,11 +2,11 @@ import Parse from 'parse/node.js';
 import { NextFunction, Request, Response } from 'express';
 import { ISLAND_CLASS_NAME, ISLAND_FIELDS, HTTP_STATUS } from '../../constants/index.js';
 import { ApplicationError } from '../middleware/errorHandler.js';
+import { logger } from '../utils/logger.js';
 
 export async function searchIslands(req: Request, res: Response, next: NextFunction) {
+  const q = req.query.q as string;
   try {
-    const q = req.query.q as string;
-
     if (!q || q.trim().length === 0) {
       throw new ApplicationError('Search query is required', HTTP_STATUS.BAD_REQUEST);
     }
@@ -49,7 +49,7 @@ export async function searchIslands(req: Request, res: Response, next: NextFunct
       return;
     }
     // Log unexpected errors for debugging
-    console.error('Search failed:', error);
+    logger.error({ error, query: q }, 'Search failed');
     next(new ApplicationError('Search failed', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 }
