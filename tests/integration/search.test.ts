@@ -14,10 +14,7 @@ import {
 } from '../../constants/index.js';
 import { schemaDefinitions } from '../../cloud/schema.js';
 import { corsMiddleware, securityHeaders } from '../../src/middleware/security.js';
-import {
-  errorHandler,
-  notFoundHandler,
-} from '../../src/middleware/errorHandler.js';
+import { errorHandler, notFoundHandler } from '../../src/middleware/errorHandler.js';
 import { searchIslands } from '../../src/controllers/search.controller.js';
 
 describe('Search API Endpoints (Integration)', () => {
@@ -101,7 +98,7 @@ describe('Search API Endpoints (Integration)', () => {
         order: 2,
         site: 'https://example.com/maldives',
         location: new Parse.GeoPoint({
-          latitude: 4.1750,
+          latitude: 4.175,
           longitude: 73.5083,
         }),
       },
@@ -114,7 +111,7 @@ describe('Search API Endpoints (Integration)', () => {
         site: 'https://example.com/bali',
         location: new Parse.GeoPoint({
           latitude: -8.3405,
-          longitude: 115.0920,
+          longitude: 115.092,
         }),
       },
       {
@@ -174,9 +171,7 @@ describe('Search API Endpoints (Integration)', () => {
       const response = await request(app).get(ROUTES.SEARCH);
       expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST);
       expect(response.body).toHaveProperty(ERROR_RESPONSE_KEYS.ERROR);
-      expect(response.body[ERROR_RESPONSE_KEYS.ERROR]).toHaveProperty(
-        ERROR_RESPONSE_KEYS.MESSAGE
-      );
+      expect(response.body[ERROR_RESPONSE_KEYS.ERROR]).toHaveProperty(ERROR_RESPONSE_KEYS.MESSAGE);
     });
 
     it('should return 400 when query parameter is empty', async () => {

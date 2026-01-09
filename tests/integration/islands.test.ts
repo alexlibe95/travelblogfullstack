@@ -79,7 +79,7 @@ describe('Islands API Endpoints (Integration)', () => {
         recreateModifiedFields: false,
         deleteExtraFields: false,
       },
-      maxUploadSize: '5mb'
+      maxUploadSize: '5mb',
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parseServer = new (ParseServer as any)(testConfig);
@@ -114,7 +114,7 @@ describe('Islands API Endpoints (Integration)', () => {
         order: 2,
         site: 'https://example.com/maldives',
         location: new Parse.GeoPoint({
-          latitude: 4.1750,
+          latitude: 4.175,
           longitude: 73.5083,
         }),
       },
@@ -128,7 +128,7 @@ describe('Islands API Endpoints (Integration)', () => {
         site: 'https://example.com/bali',
         location: new Parse.GeoPoint({
           latitude: -8.3405,
-          longitude: 115.0920,
+          longitude: 115.092,
         }),
       },
     ];
@@ -170,9 +170,7 @@ describe('Islands API Endpoints (Integration)', () => {
         const query = new Parse.Query(ISLAND_CLASS_NAME);
         query.ascending(ISLAND_FIELDS.ORDER);
         // Select fields that match the schema (name, short_description, etc.)
-        query.select(
-          ...ISLAND_LIST_FIELDS
-        );
+        query.select(...ISLAND_LIST_FIELDS);
         const islands = await query.find({ useMasterKey: true });
         res.status(HTTP_STATUS.OK).json({
           [API_RESPONSE_KEYS.SUCCESS]: true,
@@ -196,9 +194,7 @@ describe('Islands API Endpoints (Integration)', () => {
         }
         const query = new Parse.Query(ISLAND_CLASS_NAME);
         // Select fields that match the schema
-        query.select(
-          ...ISLAND_DETAIL_FIELDS
-        );
+        query.select(...ISLAND_DETAIL_FIELDS);
         const island = await query.get(id, { useMasterKey: true });
         res.status(HTTP_STATUS.OK).json({
           [API_RESPONSE_KEYS.SUCCESS]: true,

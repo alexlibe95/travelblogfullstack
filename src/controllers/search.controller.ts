@@ -1,10 +1,6 @@
 import Parse from 'parse/node.js';
 import { NextFunction, Request, Response } from 'express';
-import {
-  ISLAND_CLASS_NAME,
-  ISLAND_FIELDS,
-  HTTP_STATUS,
-} from '../../constants/index.js';
+import { ISLAND_CLASS_NAME, ISLAND_FIELDS, HTTP_STATUS } from '../../constants/index.js';
 import { ApplicationError } from '../middleware/errorHandler.js';
 
 export async function searchIslands(req: Request, res: Response, next: NextFunction) {
@@ -31,10 +27,7 @@ export async function searchIslands(req: Request, res: Response, next: NextFunct
     const query = Parse.Query.or(q1, q2, q3);
 
     // Only fields needed for dropdown
-    query.select(
-      ISLAND_FIELDS.OBJECT_ID,
-      ISLAND_FIELDS.NAME
-    );
+    query.select(ISLAND_FIELDS.OBJECT_ID, ISLAND_FIELDS.NAME);
 
     const results = await query.find({ useMasterKey: true });
 
