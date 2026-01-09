@@ -55,7 +55,10 @@ async function processThumbnail(island: Parse.Object, photo: Parse.File): Promis
     await island.save(null, { useMasterKey: true });
   } catch (error) {
     // Log error but don't throw - thumbnail generation failure shouldn't break the save
-    logger.error({ error, islandId: island.id, photoUrl: photo.url() }, 'Thumbnail generation failed');
+    logger.error(
+      { error, islandId: island.id, photoUrl: photo.url() },
+      'Thumbnail generation failed'
+    );
     // Optionally, you could set a flag on the island to indicate thumbnail generation failed
   }
 }

@@ -137,7 +137,10 @@ describe('Health Check Endpoint (Integration)', () => {
 
   it('should return status "ok" when all checks pass', async () => {
     const response = await request(app).get(ROUTES.HEALTH);
-    if (response.body.checks.database.status === 'ok' && response.body.checks.parseServer.status === 'ok') {
+    if (
+      response.body.checks.database.status === 'ok' &&
+      response.body.checks.parseServer.status === 'ok'
+    ) {
       expect(response.body.status).toBe('ok');
     }
   });

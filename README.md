@@ -5,6 +5,7 @@ A production-ready Parse Server backend for a Travel Blog application, built wit
 ## 🚀 Features
 
 ### Core Features
+
 - **Parse Server Integration** - Full Backend-as-a-Service with REST API
 - **TypeScript** - Type-safe development with strict type checking
 - **RESTful API** - Clean API endpoints for islands, search, and authentication
@@ -13,6 +14,7 @@ A production-ready Parse Server backend for a Travel Blog application, built wit
 - **Search Functionality** - Multi-field search across island names and descriptions
 
 ### Production Features
+
 - **Environment Validation** - Validates all required configuration at startup
 - **Structured Logging** - Fast, structured logging with Pino (JSON in production, pretty in development)
 - **Error Handling** - Comprehensive error handling middleware with proper error responses
@@ -85,6 +87,7 @@ THUMB_HEIGHT=300
 ### 4. Start MongoDB
 
 **macOS (Homebrew)**:
+
 ```bash
 brew services start mongodb-community
 # Or run manually
@@ -92,6 +95,7 @@ mongod --config /usr/local/etc/mongod.conf
 ```
 
 **Linux**:
+
 ```bash
 sudo systemctl start mongod
 # Or run manually
@@ -99,6 +103,7 @@ mongod
 ```
 
 **Docker**:
+
 ```bash
 docker run -d -p 27017:27017 --name mongodb mongo:latest
 ```
@@ -112,11 +117,13 @@ npm run build
 ### 6. Start the Server
 
 **Production**:
+
 ```bash
 npm start
 ```
 
 **Development** (with auto-reload):
+
 ```bash
 npm run dev
 ```
@@ -186,36 +193,40 @@ travelblogfullstack/
 
 ## 🎯 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm start` | Start the production server |
-| `npm run dev` | Start development server with auto-reload |
-| `npm run build` | Compile TypeScript to JavaScript |
-| `npm test` | Run tests in watch mode |
-| `npm run test:run` | Run tests once (CI mode) |
-| `npm run test:ui` | Run tests with Vitest UI |
-| `npm run test:coverage` | Run tests with coverage report (text, JSON, HTML) |
-| `npm run test:coverage:open` | Run tests with coverage and open HTML report (macOS/Linux: `open`, Windows: manually open `coverage/index.html`) |
-| `npm run test:coverage:watch` | Run tests with coverage in watch mode |
-| `npm run lint` | Run ESLint to check code quality |
-| `npm run lint:fix` | Fix ESLint errors automatically |
-| `npm run format` | Format code with Prettier |
+| Script                        | Description                                                                                                      |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `npm start`                   | Start the production server                                                                                      |
+| `npm run dev`                 | Start development server with auto-reload                                                                        |
+| `npm run build`               | Compile TypeScript to JavaScript                                                                                 |
+| `npm test`                    | Run tests in watch mode                                                                                          |
+| `npm run test:run`            | Run tests once (CI mode)                                                                                         |
+| `npm run test:ui`             | Run tests with Vitest UI                                                                                         |
+| `npm run test:coverage`       | Run tests with coverage report (text, JSON, HTML)                                                                |
+| `npm run test:coverage:open`  | Run tests with coverage and open HTML report (macOS/Linux: `open`, Windows: manually open `coverage/index.html`) |
+| `npm run test:coverage:watch` | Run tests with coverage in watch mode                                                                            |
+| `npm run lint`                | Run ESLint to check code quality                                                                                 |
+| `npm run lint:fix`            | Fix ESLint errors automatically                                                                                  |
+| `npm run format`              | Format code with Prettier                                                                                        |
 
 ## 🌐 API Endpoints
 
 ### Base URL
+
 - **Development**: `http://localhost:5000`
 - **Production**: Set via `SERVER_URL` environment variable
 
 ### Public Endpoints
 
 #### Root
+
 ```
 GET /
 ```
+
 Returns server information and available endpoints.
 
 **Response**:
+
 ```json
 {
   "message": "Parse Server is running 🚀",
@@ -236,12 +247,15 @@ Returns server information and available endpoints.
 ```
 
 #### Health Check
+
 ```
 GET /health
 ```
+
 Returns comprehensive server health status including database and Parse Server connectivity checks.
 
 **Response** (200 OK - Healthy):
+
 ```json
 {
   "status": "ok",
@@ -263,6 +277,7 @@ Returns comprehensive server health status including database and Parse Server c
 ```
 
 **Response** (503 Service Unavailable - Unhealthy):
+
 ```json
 {
   "status": "error",
@@ -285,11 +300,13 @@ Returns comprehensive server health status including database and Parse Server c
 ```
 
 **Status Values**:
+
 - `ok` - All checks passed
 - `degraded` - Some checks passed but not all
 - `error` - Critical checks failed (returns 503)
 
 **Health Checks**:
+
 - **Database**: Verifies MongoDB connectivity by performing a lightweight query
 - **Parse Server**: Verifies Parse Server is initialized and responding to requests
 
@@ -298,6 +315,7 @@ Returns comprehensive server health status including database and Parse Server c
 #### Authentication
 
 **Login**
+
 ```
 POST /api/auth/login
 Content-Type: application/json
@@ -309,6 +327,7 @@ Content-Type: application/json
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -321,12 +340,14 @@ Content-Type: application/json
 ```
 
 **Logout**
+
 ```
 POST /api/auth/logout
 X-Parse-Session-Token: r:abc123...
 ```
 
 **Response**:
+
 ```json
 {
   "success": true
@@ -336,11 +357,13 @@ X-Parse-Session-Token: r:abc123...
 #### Islands
 
 **Get All Islands** (List View)
+
 ```
 GET /api/islands
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -357,11 +380,13 @@ GET /api/islands
 ```
 
 **Get Island by ID** (Detail View)
+
 ```
 GET /api/islands/:id
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -385,6 +410,7 @@ GET /api/islands/:id
 ```
 
 **Update Island** (Admin Only)
+
 ```
 PUT /api/islands/:id
 X-Parse-Session-Token: r:abc123...
@@ -397,6 +423,7 @@ Content-Type: application/json
 ```
 
 **Upload Island Photo** (Admin Only)
+
 ```
 POST /api/islands/:id/photo
 X-Parse-Session-Token: r:abc123...
@@ -406,6 +433,7 @@ file: [image file]
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -416,11 +444,13 @@ file: [image file]
 #### Search
 
 **Search Islands**
+
 ```
 GET /api/search?q=santorini
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -449,6 +479,7 @@ See [Parse Server REST API Documentation](https://docs.parseplatform.org/rest/gu
 ### Parse Dashboard
 
 Access the admin dashboard at:
+
 ```
 http://localhost:5000/dashboard
 ```
@@ -458,17 +489,20 @@ Login with credentials from `APP_USER` and `APP_PASS` environment variables.
 ### API Documentation (Swagger)
 
 Interactive API documentation is available at:
+
 ```
 http://localhost:5000/api-docs
 ```
 
 The Swagger UI provides:
+
 - Complete API endpoint documentation
 - Request/response schemas
 - Try-it-out functionality to test endpoints
 - Authentication support (session token)
 
 All API endpoints are documented with:
+
 - Request parameters and body schemas
 - Response schemas and status codes
 - Authentication requirements
@@ -480,54 +514,62 @@ The application uses Parse Server's schema management system. Schemas are define
 
 ### Islands Class
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | String | Yes | Island name |
-| `short_description` | String | Yes | Brief description |
-| `description` | String | Yes | Full description |
-| `order` | Number | Yes | Display order |
-| `site` | String | No | Website URL |
-| `photo` | File | No | Main photo |
-| `photo_thumb` | File | No | Thumbnail (auto-generated) |
-| `location` | GeoPoint | No | Geographic coordinates |
+| Field               | Type     | Required | Description                |
+| ------------------- | -------- | -------- | -------------------------- |
+| `name`              | String   | Yes      | Island name                |
+| `short_description` | String   | Yes      | Brief description          |
+| `description`       | String   | Yes      | Full description           |
+| `order`             | Number   | Yes      | Display order              |
+| `site`              | String   | No       | Website URL                |
+| `photo`             | File     | No       | Main photo                 |
+| `photo_thumb`       | File     | No       | Thumbnail (auto-generated) |
+| `location`          | GeoPoint | No       | Geographic coordinates     |
 
 **Permissions**:
+
 - **Read**: Public (anyone can read)
 - **Write**: Admin only (requires authentication)
 
 **Automatic Features**:
+
 - Thumbnail generation on photo upload (via `afterSave` trigger)
 - Photo size validation (max 5MB via `beforeSave` trigger)
 
 ## 🔒 Security Features
 
 ### Environment Variable Validation
+
 - All required environment variables are validated at startup
 - Missing variables cause the application to fail fast with clear error messages
 
 ### CORS Configuration
+
 - Configurable allowed origins
 - Development: `http://localhost:3000`, `http://localhost:4200`, `http://localhost:5173`
 - Production: Configure via `ALLOWED_ORIGINS` environment variable
 
 ### Security Headers
+
 - `X-Frame-Options: DENY` - Prevents clickjacking
 - `X-Content-Type-Options: nosniff` - Prevents MIME sniffing
 - `X-XSS-Protection: 1; mode=block` - XSS protection
 - `Referrer-Policy: strict-origin-when-cross-origin` - Referrer policy
 
 ### Rate Limiting
+
 - **Development**: 1000 requests per 15 minutes per IP
 - **Production**: 100 requests per 15 minutes per IP
 - **Excluded Routes**: Health checks (`/health`), Dashboard (`/dashboard/*`), and API docs (`/api-docs`) are excluded from rate limiting
 - **Note**: For production with multiple servers, consider using Redis store for distributed rate limiting
 
 ### Error Handling
+
 - Prevents information leakage in production
 - Stack traces only shown in development
 - Consistent error response format
 
 ### Logging
+
 - **Structured Logging** - Uses Pino for fast, structured JSON logging
 - **Development Mode** - Pretty-printed logs with colors for easier debugging
 - **Production Mode** - JSON logs optimized for log aggregation tools (ELK, CloudWatch, etc.)
@@ -542,6 +584,7 @@ The application uses Parse Server's schema management system. Schemas are define
 - **Performance** - Pino is one of the fastest Node.js loggers, with minimal overhead
 
 ### Authentication
+
 - Session-based authentication
 - Secure session token handling
 - Admin role-based access control
@@ -572,6 +615,7 @@ npm run test:coverage
 ### Test Coverage
 
 The project includes comprehensive tests for:
+
 - ✅ All middleware (error handling, security, auth, upload)
 - ✅ Environment validation
 - ✅ All API endpoints (auth, islands, search, health, root)
@@ -582,6 +626,7 @@ The project includes comprehensive tests for:
 **Current Coverage**: ~85% overall
 
 **View Coverage Reports**:
+
 ```bash
 # Generate coverage report
 npm run test:coverage
@@ -617,6 +662,7 @@ npm start
 ### Process Management
 
 **PM2**:
+
 ```bash
 npm install -g pm2
 pm2 start dist/index.js --name travelblog-api
@@ -625,6 +671,7 @@ pm2 startup
 ```
 
 **Docker** (example):
+
 ```dockerfile
 FROM node:20-alpine
 WORKDIR /app
@@ -636,6 +683,7 @@ CMD ["node", "dist/index.js"]
 ```
 
 **Systemd** (example service file):
+
 ```ini
 [Unit]
 Description=Travel Blog API
@@ -752,6 +800,7 @@ This project is for assignment purposes.
 ## 🙏 Acknowledgments
 
 Built with:
+
 - [Parse Server](https://github.com/parse-community/parse-server) - Backend framework
 - [Express](https://expressjs.com/) - Web framework
 - [TypeScript](https://www.typescriptlang.org/) - Type-safe JavaScript

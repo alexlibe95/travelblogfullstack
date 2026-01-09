@@ -78,10 +78,14 @@ export const healthRoutes = Router();
  */
 healthRoutes.get(ROUTES.HEALTH, async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const healthCheck = await performHealthCheck(env.NODE_ENV || ENVIRONMENTS.DEVELOPMENT, packageJson.version);
+    const healthCheck = await performHealthCheck(
+      env.NODE_ENV || ENVIRONMENTS.DEVELOPMENT,
+      packageJson.version
+    );
 
     // Return 503 if any critical check fails
-    const statusCode = healthCheck.status === 'error' ? HTTP_STATUS.SERVICE_UNAVAILABLE : HTTP_STATUS.OK;
+    const statusCode =
+      healthCheck.status === 'error' ? HTTP_STATUS.SERVICE_UNAVAILABLE : HTTP_STATUS.OK;
 
     res.status(statusCode).json(healthCheck);
   } catch (error) {

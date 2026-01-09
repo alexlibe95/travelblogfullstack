@@ -24,7 +24,11 @@ export interface HealthCheckResult {
 /**
  * Check database connection by performing a simple Parse query
  */
-async function checkDatabase(): Promise<{ status: 'ok' | 'error'; message?: string; responseTime: number }> {
+async function checkDatabase(): Promise<{
+  status: 'ok' | 'error';
+  message?: string;
+  responseTime: number;
+}> {
   const startTime = Date.now();
   try {
     // Perform a simple query to check database connectivity
@@ -53,7 +57,11 @@ async function checkDatabase(): Promise<{ status: 'ok' | 'error'; message?: stri
 /**
  * Check Parse Server status by verifying it can respond to requests
  */
-async function checkParseServer(): Promise<{ status: 'ok' | 'error'; message?: string; responseTime: number }> {
+async function checkParseServer(): Promise<{
+  status: 'ok' | 'error';
+  message?: string;
+  responseTime: number;
+}> {
   const startTime = Date.now();
   try {
     // Check if Parse Server is initialized and can respond

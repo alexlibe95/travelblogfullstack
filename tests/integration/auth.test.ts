@@ -54,7 +54,7 @@ describe('Auth API Endpoints (Integration)', () => {
         recreateModifiedFields: false,
         deleteExtraFields: false,
       },
-      maxUploadSize: MAX_GLOBAL_UPLOAD_SIZE_MB
+      maxUploadSize: MAX_GLOBAL_UPLOAD_SIZE_MB,
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parseServer = new (ParseServer as any)(testConfig);

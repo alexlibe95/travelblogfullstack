@@ -81,6 +81,7 @@ cloud/
 **Current Coverage**: ~91% overall
 
 The project includes comprehensive tests for:
+
 - ✅ All middleware (error handling, security, auth, upload)
 - ✅ Environment validation
 - ✅ All API endpoints (auth, islands, search, health, root)
@@ -290,14 +291,15 @@ Parse.serverURL = 'http://localhost:5000';
    - ❌ `it('should work')`
 
 2. **AAA Pattern**: Arrange, Act, Assert - structure your tests clearly
+
    ```typescript
    it('should do something', () => {
      // Arrange
      const input = 'test';
-     
+
      // Act
      const result = functionUnderTest(input);
-     
+
      // Assert
      expect(result).toBe('expected');
    });
@@ -323,6 +325,7 @@ Parse.serverURL = 'http://localhost:5000';
    - Clean up test data
 
 7. **Constants**: Use constants from `constants/` instead of magic numbers/strings
+
    ```typescript
    import { HTTP_STATUS, ROUTES } from '../../constants/index.js';
    expect(response.status).toBe(HTTP_STATUS.OK);
