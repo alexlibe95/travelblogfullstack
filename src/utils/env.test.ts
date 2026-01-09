@@ -26,11 +26,11 @@ describe('Environment Validation', () => {
     process.env.DB_URI = 'mongodb://localhost:27017/test';
     process.env.APP_ID = 'test-app-id';
     process.env.MASTER_KEY = 'test-master-key';
-    process.env.SERVER_URL = 'http://localhost:1337';
+    process.env.SERVER_URL = 'http://localhost:5000';
     process.env.APP_NAME = 'Test App';
     process.env.APP_USER = 'testuser';
     process.env.APP_PASS = 'testpass';
-    process.env.SERVER_PORT = '1337';
+    process.env.SERVER_PORT = '5000';
 
     await expect(importAndValidate()).resolves.toBeDefined();
   });
@@ -38,11 +38,11 @@ describe('Environment Validation', () => {
   it('should throw error when DB_URI is missing', async () => {
     process.env.APP_ID = 'test-app-id';
     process.env.MASTER_KEY = 'test-master-key';
-    process.env.SERVER_URL = 'http://localhost:1337';
+    process.env.SERVER_URL = 'http://localhost:5000';
     process.env.APP_NAME = 'Test App';
     process.env.APP_USER = 'testuser';
     process.env.APP_PASS = 'testpass';
-    process.env.SERVER_PORT = '1337';
+    process.env.SERVER_PORT = '5000';
     delete process.env.DB_URI;
 
     await expect(importAndValidate()).rejects.toThrow(
@@ -64,11 +64,11 @@ describe('Environment Validation', () => {
     process.env.DB_URI = 'mongodb://localhost:27017/test';
     process.env.APP_ID = 'test-app-id';
     process.env.MASTER_KEY = 'test-master-key';
-    process.env.SERVER_URL = 'http://localhost:1337';
+    process.env.SERVER_URL = 'http://localhost:5000';
     process.env.APP_NAME = 'Test App';
     process.env.APP_USER = 'testuser';
     process.env.APP_PASS = 'testpass';
-    process.env.SERVER_PORT = '1337';
+    process.env.SERVER_PORT = '5000';
     delete process.env.NODE_ENV;
 
     const config = await importAndValidate();
@@ -79,11 +79,11 @@ describe('Environment Validation', () => {
     process.env.DB_URI = 'mongodb://localhost:27017/test';
     process.env.APP_ID = 'test-app-id';
     process.env.MASTER_KEY = 'test-master-key';
-    process.env.SERVER_URL = 'http://localhost:1337';
+    process.env.SERVER_URL = 'http://localhost:5000';
     process.env.APP_NAME = 'Test App';
     process.env.APP_USER = 'testuser';
     process.env.APP_PASS = 'testpass';
-    process.env.SERVER_PORT = '1337';
+    process.env.SERVER_PORT = '5000';
     delete process.env.PARSE_MOUNT;
 
     const config = await importAndValidate();
@@ -94,11 +94,11 @@ describe('Environment Validation', () => {
     process.env.DB_URI = 'mongodb://localhost:27017/test';
     process.env.APP_ID = 'test-app-id';
     process.env.MASTER_KEY = 'test-master-key';
-    process.env.SERVER_URL = 'http://localhost:1337';
+    process.env.SERVER_URL = 'http://localhost:5000';
     process.env.APP_NAME = 'Test App';
     process.env.APP_USER = 'testuser';
     process.env.APP_PASS = 'testpass';
-    process.env.SERVER_PORT = '1337';
+    process.env.SERVER_PORT = '5000';
     process.env.NODE_ENV = ENVIRONMENTS.PRODUCTION;
     process.env.PARSE_MOUNT = '/api';
 
@@ -107,11 +107,11 @@ describe('Environment Validation', () => {
     expect(config.DB_URI).toBe('mongodb://localhost:27017/test');
     expect(config.APP_ID).toBe('test-app-id');
     expect(config.MASTER_KEY).toBe('test-master-key');
-    expect(config.SERVER_URL).toBe('http://localhost:1337');
+    expect(config.SERVER_URL).toBe('http://localhost:5000');
     expect(config.APP_NAME).toBe('Test App');
     expect(config.APP_USER).toBe('testuser');
     expect(config.APP_PASS).toBe('testpass');
-    expect(config.SERVER_PORT).toBe('1337');
+    expect(config.SERVER_PORT).toBe('5000');
     expect(config.NODE_ENV).toBe(ENVIRONMENTS.PRODUCTION);
     expect(config.PARSE_MOUNT).toBe('/api');
   });
