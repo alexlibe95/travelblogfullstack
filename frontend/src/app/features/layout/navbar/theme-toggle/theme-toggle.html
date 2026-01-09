@@ -1,0 +1,13 @@
+<button
+  class="btn btn-outline"
+  type="button"
+  (click)="toggleTheme()"
+  [attr.aria-label]="isDarkTheme() ? 'Switch to light theme' : 'Switch to dark theme'"
+  [attr.title]="isDarkTheme() ? 'Switch to light theme' : 'Switch to dark theme'"
+>
+  @if (isDarkTheme()) {
+    <fa-icon [icon]="faSun" />
+  } @else {
+    <fa-icon [icon]="faMoon" />
+  }
+</button>
