@@ -21,7 +21,12 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         username: user.getUsername(),
       },
     });
-  } catch {
+  } catch (error) {
+    // If it's already an ApplicationError, pass it through
+    if (error instanceof ApplicationError) {
+      next(error);
+      return;
+    }
     next(new ApplicationError('Invalid username or password', HTTP_STATUS.UNAUTHORIZED));
   }
 }
@@ -50,6 +55,11 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
       res.status(HTTP_STATUS.OK).json({ success: true });
     }
   } catch (error) {
+    // If it's already an ApplicationError, pass it through
+    if (error instanceof ApplicationError) {
+      next(error);
+      return;
+    }
     // Log the actual error for debugging
     console.error('Logout error:', error);
     next(new ApplicationError('Logout failed', HTTP_STATUS.INTERNAL_SERVER_ERROR));
