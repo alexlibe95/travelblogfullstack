@@ -28,7 +28,7 @@
               }
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "css/custom.css",
               "src/styles.css"
             ]
           },
