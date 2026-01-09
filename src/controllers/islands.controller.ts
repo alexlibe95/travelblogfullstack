@@ -22,8 +22,15 @@ export async function getIslands(_req: Request, res: Response, next: NextFunctio
       success: true,
       data: islands.map((i) => i.toJSON()),
     });
-  } catch {
-    next(new ApplicationError('Failed to fetch islands', 500));
+  } catch (error) {
+    // If it's already an ApplicationError, pass it through
+    if (error instanceof ApplicationError) {
+      next(error);
+      return;
+    }
+    // Log unexpected errors for debugging
+    console.error('Failed to fetch islands:', error);
+    next(new ApplicationError('Failed to fetch islands', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 }
 
@@ -38,8 +45,21 @@ export async function getIslandById(req: Request, res: Response, next: NextFunct
       success: true,
       data: island.toJSON(),
     });
-  } catch {
-    next(new ApplicationError('Island not found', 404));
+  } catch (error) {
+    // If it's already an ApplicationError, pass it through
+    if (error instanceof ApplicationError) {
+      next(error);
+      return;
+    }
+    // Parse errors for "not found" typically have code 101
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((error as any)?.code === 101) {
+      next(new ApplicationError('Island not found', HTTP_STATUS.NOT_FOUND));
+      return;
+    }
+    // Log unexpected errors for debugging
+    console.error('Failed to fetch island:', error);
+    next(new ApplicationError('Island not found', HTTP_STATUS.NOT_FOUND));
   }
 }
 
@@ -69,7 +89,20 @@ export async function updateIsland(req: Request, res: Response, next: NextFuncti
       success: true,
     });
   } catch (error) {
-    next(error);
+    // If it's already an ApplicationError, pass it through
+    if (error instanceof ApplicationError) {
+      next(error);
+      return;
+    }
+    // Parse errors for "not found" typically have code 101
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((error as any)?.code === 101) {
+      next(new ApplicationError('Island not found', HTTP_STATUS.NOT_FOUND));
+      return;
+    }
+    // Log unexpected errors for debugging
+    console.error('Failed to update island:', error);
+    next(new ApplicationError('Failed to update island', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 }
 
@@ -104,10 +137,19 @@ export async function uploadIslandPhoto(req: Request, res: Response, next: NextF
       photoUrl: parseFile.url(),
     });
   } catch (error) {
-    next(
-      error instanceof ApplicationError
-        ? error
-        : new ApplicationError('Failed to upload photo', HTTP_STATUS.INTERNAL_SERVER_ERROR)
-    );
+    // If it's already an ApplicationError, pass it through
+    if (error instanceof ApplicationError) {
+      next(error);
+      return;
+    }
+    // Parse errors for "not found" typically have code 101
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((error as any)?.code === 101) {
+      next(new ApplicationError('Island not found', HTTP_STATUS.NOT_FOUND));
+      return;
+    }
+    // Log unexpected errors for debugging
+    console.error('Failed to upload photo:', error);
+    next(new ApplicationError('Failed to upload photo', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 }

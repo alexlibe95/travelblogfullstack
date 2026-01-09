@@ -43,10 +43,13 @@ export async function searchIslands(req: Request, res: Response, next: NextFunct
       }),
     });
   } catch (error) {
-    next(
-      error instanceof ApplicationError
-        ? error
-        : new ApplicationError('Search failed', HTTP_STATUS.INTERNAL_SERVER_ERROR)
-    );
+    // If it's already an ApplicationError, pass it through
+    if (error instanceof ApplicationError) {
+      next(error);
+      return;
+    }
+    // Log unexpected errors for debugging
+    console.error('Search failed:', error);
+    next(new ApplicationError('Search failed', HTTP_STATUS.INTERNAL_SERVER_ERROR));
   }
 }

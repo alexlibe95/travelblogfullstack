@@ -27,6 +27,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       next(error);
       return;
     }
+    // Log unexpected errors for debugging (but don't expose details to client)
+    console.error('Login failed:', error);
     next(new ApplicationError('Invalid username or password', HTTP_STATUS.UNAUTHORIZED));
   }
 }
