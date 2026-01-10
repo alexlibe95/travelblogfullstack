@@ -87,12 +87,6 @@ try {
   // Post-process the generated types to fix linting issues
   console.log('🔧 Post-processing generated types...');
   
-  // Add eslint-disable comment at the top for generated file rules
-  // These rules don't work well with auto-generated code
-  const eslintDisable = `/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
-/* eslint-disable @typescript-eslint/consistent-type-definitions */
-`;
-  
   // Replace index signatures with Record types for better linting
   // Pattern: headers: { [name: string]: unknown; } -> headers: Record<string, unknown>
   // Match the pattern where it's inside an object property
@@ -101,9 +95,11 @@ try {
     '$1: Record<string, unknown>'
   );
   
-  // Prepend eslint-disable comments (but preserve the original comment if it exists)
+  // Add eslint-disable for consistent-type-definitions only
+  // The generated code uses 'type' instead of 'interface', which triggers this rule
+  // We don't need consistent-indexed-object-style because we replace index signatures with Record
   if (!typesContent.includes('eslint-disable')) {
-    typesContent = eslintDisable + typesContent;
+    typesContent = `/* eslint-disable @typescript-eslint/consistent-type-definitions */\n${typesContent}`;
   }
   
   // Write types file

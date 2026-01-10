@@ -25,10 +25,19 @@ export function corsMiddleware(_req: Request, res: Response, next: NextFunction)
 
   const origin = _req.headers.origin;
 
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader(CORS_HEADERS.ALLOW_ORIGIN, origin);
-  } else if (process.env.NODE_ENV === ENVIRONMENTS.DEVELOPMENT) {
-    res.setHeader(CORS_HEADERS.ALLOW_ORIGIN, '*');
+  // When credentials are allowed, we cannot use '*' - must specify exact origin
+  // In development, allow any origin from the request if it's in our allowed list
+  // or if it's a localhost origin (for flexibility during development)
+  if (origin) {
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader(CORS_HEADERS.ALLOW_ORIGIN, origin);
+    } else if (
+      process.env.NODE_ENV === ENVIRONMENTS.DEVELOPMENT &&
+      origin.startsWith('http://localhost:')
+    ) {
+      // Allow any localhost origin in development for flexibility
+      res.setHeader(CORS_HEADERS.ALLOW_ORIGIN, origin);
+    }
   }
 
   res.setHeader(CORS_HEADERS.ALLOW_METHODS, ALLOWED_METHODS);

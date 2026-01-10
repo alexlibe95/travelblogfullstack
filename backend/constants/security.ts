@@ -52,6 +52,7 @@ export const PARSE_HEADERS = [
   'Authorization',
   'X-Parse-Application-Id',
   'X-Parse-REST-API-Key',
+  'x-parse-session-token',
 ].join(', ');
 
 export const ENVIRONMENTS = {

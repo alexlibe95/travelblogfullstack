@@ -11,18 +11,21 @@ export async function searchIslands(req: Request, res: Response, next: NextFunct
       throw new ApplicationError('Search query is required', HTTP_STATUS.BAD_REQUEST);
     }
 
-    // Search across multiple fields using OR query
-    // fullText() only works on one field, so we use contains() for multi-field search
+    // Search across multiple fields using OR query with case-insensitive matching
+    // Use matches() with regex for case-insensitive search
     const searchTerm = q.trim();
+    // Escape special regex characters and create case-insensitive pattern
+    const escapedTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const caseInsensitivePattern = new RegExp(escapedTerm, 'i');
 
     const q1 = new Parse.Query(ISLAND_CLASS_NAME);
-    q1.contains(ISLAND_FIELDS.NAME, searchTerm);
+    q1.matches(ISLAND_FIELDS.NAME, caseInsensitivePattern);
 
     const q2 = new Parse.Query(ISLAND_CLASS_NAME);
-    q2.contains(ISLAND_FIELDS.SHORT_DESCRIPTION, searchTerm);
+    q2.matches(ISLAND_FIELDS.SHORT_DESCRIPTION, caseInsensitivePattern);
 
     const q3 = new Parse.Query(ISLAND_CLASS_NAME);
-    q3.contains(ISLAND_FIELDS.DESCRIPTION, searchTerm);
+    q3.matches(ISLAND_FIELDS.DESCRIPTION, caseInsensitivePattern);
 
     const query = Parse.Query.or(q1, q2, q3);
 
