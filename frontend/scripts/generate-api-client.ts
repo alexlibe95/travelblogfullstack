@@ -139,6 +139,8 @@ export default apiClient;
   writeFileSync(clientPath, clientCode, 'utf-8');
   console.log(`✅ Client generated: ${clientPath}`);
   console.log('✅ API client generation completed!');
+  
+  // Note: Run "npm run generate:services" separately to generate service classes
 } catch (error) {
   console.error('❌ Failed to generate API client:', error);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

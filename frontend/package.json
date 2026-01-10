@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "prestart": "npm run sass:build",
+    "prestart": "npm run sass:build && npm run api:generate",
     "start": "ng serve",
     "prebuild": "npm run sass:build && npm run api:generate",
     "build": "ng build",
@@ -15,8 +15,8 @@
     "sass:watch": "sass --watch ./scss/custom.scss ./css/custom.css",
     "sass:build": "sass ./scss/custom.scss ./css/custom.css",
     "generate:api": "tsx scripts/generate-api-client.ts",
-    "generate:api:url": "tsx scripts/generate-api-client-from-url.ts",
-    "api:generate": "cd ../backend && npm run export:openapi && cd ../frontend && npm run generate:api"
+    "generate:services": "tsx scripts/generate-services.ts",
+    "api:generate": "cd ../backend && npm run export:openapi && cd ../frontend && npm run generate:api && npm run generate:services"
   },
   "private": true,
   "packageManager": "npm@11.6.2",

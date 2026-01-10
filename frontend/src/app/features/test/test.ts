@@ -1,7 +1,13 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { apiClient, createAuthenticatedClient } from '../../../lib/api/client';
+import { 
+  authenticationService, 
+  healthService, 
+  islandsService, 
+  apiService, 
+  searchService 
+} from '../../../lib/api/services';
 import type { components } from '../../../lib/api/types';
 
 type LoginResponse = components['schemas']['LoginResponse'];
@@ -12,7 +18,6 @@ type SearchResponse = components['schemas']['SearchResponse'];
 
 @Component({
   selector: 'app-test',
-  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './test.html',
   styleUrl: './test.css',
@@ -47,16 +52,16 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const { data, error } = await apiClient.GET('/health');
+      const result = await healthService.checkHealth();
       
-      if (error) {
-        this.error.set(`Health check failed: ${JSON.stringify(error)}`);
+      if (result.error) {
+        this.error.set(`Health check failed: ${result.error.message}`);
         return;
       }
       
-      if (data) {
-        this.healthStatus.set(data);
-        console.log('✅ Health check successful:', data);
+      if (result.data) {
+        this.healthStatus.set(result.data);
+        console.log('✅ Health check successful:', result.data);
       }
     } catch (err) {
       this.error.set(`Health check error: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -74,16 +79,16 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const { data, error } = await apiClient.GET('/');
+      const result = await apiService.getRootInfo();
       
-      if (error) {
-        this.error.set(`Root endpoint error: ${JSON.stringify(error)}`);
+      if (result.error) {
+        this.error.set(`Root endpoint error: ${result.error.message}`);
         return;
       }
       
-      if (data) {
-        this.rootInfo.set(data);
-        console.log('✅ Root info:', data);
+      if (result.data) {
+        this.rootInfo.set(result.data);
+        console.log('✅ Root info:', result.data);
       }
     } catch (err) {
       this.error.set(`Root endpoint error: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -106,21 +111,27 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const { data, error } = await apiClient.POST('/api/auth/login', {
-        body: {
-          username: this.loginUsername,
-          password: this.loginPassword,
-        },
+      const result = await authenticationService.login({
+        username: this.loginUsername,
+        password: this.loginPassword,
       });
       
-      if (error) {
-        this.error.set(`Login failed: ${JSON.stringify(error)}`);
+      if (result.error) {
+        this.error.set(`Login failed: ${result.error.message}`);
         return;
       }
       
-      if (data && 'sessionToken' in data) {
-        const loginData = data as LoginResponse;
-        this.sessionToken.set(loginData.sessionToken || null);
+      if (result.data && typeof result.data === 'object' && result.data !== null && 'sessionToken' in result.data) {
+        const loginData = result.data as LoginResponse;
+        const token = loginData.sessionToken || null;
+        this.sessionToken.set(token);
+        
+        // Set auth token on all services that need it
+        if (token) {
+          authenticationService.setAuthToken(token);
+          islandsService.setAuthToken(token);
+        }
+        
         console.log('✅ Login successful:', loginData.user);
       }
     } catch (err) {
@@ -145,17 +156,20 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const authClient = createAuthenticatedClient(token);
-      const { data, error } = await authClient.POST('/api/auth/logout');
+      const result = await authenticationService.logout();
       
-      if (error) {
-        this.error.set(`Logout failed: ${JSON.stringify(error)}`);
+      if (result.error) {
+        this.error.set(`Logout failed: ${result.error.message}`);
         return;
       }
       
-      if (data) {
+      if (result.data) {
         console.log('✅ Logout successful');
         this.sessionToken.set(null);
+        
+        // Clear auth tokens from all services
+        authenticationService.clearAuthToken();
+        islandsService.clearAuthToken();
       }
     } catch (err) {
       this.error.set(`Logout error: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -173,15 +187,15 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const { data, error } = await apiClient.GET('/api/islands');
+      const result = await islandsService.getAllIsland();
       
-      if (error) {
-        this.error.set(`Failed to fetch islands: ${JSON.stringify(error)}`);
+      if (result.error) {
+        this.error.set(`Failed to fetch islands: ${result.error.message}`);
         return;
       }
       
-      if (data && 'data' in data) {
-        const islandsData = data as IslandListResponse;
+      if (result.data && typeof result.data === 'object' && result.data !== null && 'data' in result.data) {
+        const islandsData = result.data as IslandListResponse;
         this.islands.set(islandsData.data || []);
         console.log(`✅ Fetched ${islandsData.data?.length || 0} islands`);
       }
@@ -206,19 +220,15 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const { data, error } = await apiClient.GET('/api/islands/{id}', {
-        params: {
-          path: { id: this.islandId },
-        },
-      });
+      const result = await islandsService.getByIdIsland(this.islandId);
       
-      if (error) {
-        this.error.set(`Failed to fetch island: ${JSON.stringify(error)}`);
+      if (result.error) {
+        this.error.set(`Failed to fetch island: ${result.error.message}`);
         return;
       }
       
-      if (data && 'data' in data) {
-        const islandData = data as IslandDetailResponse;
+      if (result.data && typeof result.data === 'object' && result.data !== null && 'data' in result.data) {
+        const islandData = result.data as IslandDetailResponse;
         this.selectedIsland.set(islandData.data || null);
         console.log('✅ Island fetched:', islandData.data?.name);
       }
@@ -249,7 +259,6 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const authClient = createAuthenticatedClient(token);
       const updates: UpdateIslandRequest = {};
       
       if (this.updateName) {
@@ -265,21 +274,14 @@ export class Test implements OnInit {
         return;
       }
 
-      const { data, error, response } = await authClient.PUT('/api/islands/{id}', {
-        params: {
-          path: { id: this.islandId },
-        },
-        body: updates,
-      });
+      const result = await islandsService.updateIsland(this.islandId, updates);
       
-      if (error) {
-        this.error.set(`Failed to update island: ${JSON.stringify(error)}`);
+      if (result.error) {
+        this.error.set(`Failed to update island: ${result.error.message}`);
         return;
       }
       
-      // Success if we have data or if response status is 200
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (data || (response && (response as any).status === 200)) {
+      if (result.data) {
         console.log('✅ Island updated successfully');
         // Refresh the island data
         await this.getIslandById();
@@ -318,29 +320,15 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const authClient = createAuthenticatedClient(token);
+      const result = await islandsService.uploadPhotoIsland(this.islandId, photoFile);
       
-      // Create FormData for multipart/form-data
-      const formData = new FormData();
-      formData.append('photo', photoFile);
-      
-      // For multipart/form-data, we need to pass FormData directly
-      // Note: openapi-fetch handles FormData automatically
-      const { data, error } = await authClient.POST('/api/islands/{id}/photo', {
-        params: {
-          path: { id: this.islandId },
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        body: formData as any,
-      });
-      
-      if (error) {
-        this.error.set(`Failed to upload photo: ${JSON.stringify(error)}`);
+      if (result.error) {
+        this.error.set(`Failed to upload photo: ${result.error.message}`);
         return;
       }
       
-      if (data && 'photoUrl' in data) {
-        console.log('✅ Photo uploaded:', data.photoUrl);
+      if (result.data && typeof result.data === 'object' && result.data !== null && 'photoUrl' in result.data) {
+        console.log('✅ Photo uploaded:', (result.data as { photoUrl?: string }).photoUrl);
         // Refresh the island data to see the new photo
         await this.getIslandById();
       }
@@ -365,19 +353,15 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const { data, error } = await apiClient.GET('/api/search', {
-        params: {
-          query: { q: this.searchQuery },
-        },
-      });
+      const result = await searchService.searchIslands({ q: this.searchQuery });
       
-      if (error) {
-        this.error.set(`Search failed: ${JSON.stringify(error)}`);
+      if (result.error) {
+        this.error.set(`Search failed: ${result.error.message}`);
         return;
       }
       
-      if (data && 'data' in data) {
-        const searchData = data as SearchResponse;
+      if (result.data && typeof result.data === 'object' && result.data !== null && 'data' in result.data) {
+        const searchData = result.data as SearchResponse;
         this.searchResults.set(searchData.data || []);
         console.log(`✅ Found ${searchData.count || 0} results for "${this.searchQuery}"`);
       }
