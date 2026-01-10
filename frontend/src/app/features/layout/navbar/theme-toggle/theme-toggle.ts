@@ -20,6 +20,9 @@ export class ThemeToggle {
     if (savedTheme === 'dark') {
       this.isDarkTheme.set(true);
       this.applyTheme(true);
+    } else {
+      // Always set the theme attribute, even for default light theme
+      this.applyTheme(false);
     }
 
     // Watch for theme changes and apply them

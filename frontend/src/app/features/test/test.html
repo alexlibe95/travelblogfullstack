@@ -11,7 +11,7 @@
     <div class="alert alert-info" role="alert">Loading...</div>
   }
 
-  @if (sessionToken(); as token) {
+  @if (!isLoading() && sessionToken(); as token) {
     <div class="alert alert-success" role="alert">
       <strong>Authenticated:</strong> Session token active
     </div>

@@ -1,0 +1,12 @@
+/* html[data-bs-theme="dark"] .bg-theme {
+  filter: brightness(0.9) contrast(1) saturate(1);
+}
+
+html[data-bs-theme="light"] .bg-theme {
+  filter: brightness(1.05) contrast(1.05) saturate(1.05);
+} */
+
+
+.bg-theme {
+  filter: brightness(1.1) contrast(1.2) saturate(1.1);
+}
