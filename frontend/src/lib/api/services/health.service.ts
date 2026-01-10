@@ -34,13 +34,14 @@ export class HealthService {
    */
   async checkHealth(): Promise<{ data: unknown; error: null } | { data: null; error: Error }> {
     const { data, error } = await this.getClient().GET('/health');
-
+    
     if (error) {
       throw new Error(`checkHealth failed: ${JSON.stringify(error)}`);
     }
-
+    
     return { data, error: null };
   }
+
 }
 
 // Export singleton instance

@@ -32,6 +32,7 @@ export class Test implements OnInit {
   protected readonly isLoading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly islands = signal<IslandListResponse['data']>([]);
+  protected readonly latestIslands = signal<IslandListResponse['data']>([]);
   protected readonly selectedIsland = signal<IslandDetailResponse['data'] | null>(null);
   protected readonly searchResults = signal<SearchResponse['data']>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -250,6 +251,41 @@ export class Test implements OnInit {
   }
 
   /**
+   * 5a. Get Latest Islands - GET /api/islands/latest
+   * Public endpoint to get the 6 most recently modified islands
+   */
+  async getLatestIslands(): Promise<void> {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    try {
+      const result = await islandsService.getAllLatest();
+
+      if (result.error) {
+        this.error.set(`Failed to fetch latest islands: ${result.error.message}`);
+        return;
+      }
+
+      if (
+        result.data &&
+        typeof result.data === 'object' &&
+        result.data !== null &&
+        'data' in result.data
+      ) {
+        const islandsData = result.data as IslandListResponse;
+        this.latestIslands.set(islandsData.data || []);
+        console.log(`✅ Fetched ${islandsData.data?.length || 0} latest islands`);
+      }
+    } catch (err) {
+      this.error.set(
+        `Get latest islands error: ${err instanceof Error ? err.message : 'Unknown error'}`
+      );
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  /**
    * 6. Get Island by ID - GET /api/islands/{id}
    * Public endpoint to get detailed island information
    */
@@ -448,5 +484,6 @@ export class Test implements OnInit {
     // Example: Check health and load islands on component init
     await this.checkHealth();
     await this.getAllIslands();
+    await this.getLatestIslands();
   }
 }

@@ -33,17 +33,15 @@ export class AuthenticationService {
   /**
    * User login
    */
-  async login(
-    body: components['schemas']['LoginRequest']
-  ): Promise<{ data: unknown; error: null } | { data: null; error: Error }> {
+  async login(body: components['schemas']['LoginRequest']): Promise<{ data: unknown; error: null } | { data: null; error: Error }> {
     const { data, error } = await this.getClient().POST('/api/auth/login', {
       body,
     });
-
+    
     if (error) {
       throw new Error(`login failed: ${JSON.stringify(error)}`);
     }
-
+    
     return { data, error: null };
   }
 
@@ -52,13 +50,14 @@ export class AuthenticationService {
    */
   async logout(): Promise<{ data: unknown; error: null } | { data: null; error: Error }> {
     const { data, error } = await this.getClient().POST('/api/auth/logout');
-
+    
     if (error) {
       throw new Error(`logout failed: ${JSON.stringify(error)}`);
     }
-
+    
     return { data, error: null };
   }
+
 }
 
 // Export singleton instance

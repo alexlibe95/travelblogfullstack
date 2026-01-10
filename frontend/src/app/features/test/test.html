@@ -129,6 +129,36 @@
     </div>
   </div>
 
+  <!-- Get Latest Islands -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>4a. Get Latest Islands - GET /api/islands/latest</h5>
+    </div>
+    <div class="card-body">
+      <button class="btn btn-primary" (click)="getLatestIslands()" [disabled]="isLoading()">
+        Fetch Latest 6 Islands
+      </button>
+      @if (latestIslands() && (latestIslands()?.length ?? 0) > 0) {
+        <div class="mt-3">
+          <p>
+            <strong>Found {{ latestIslands()?.length ?? 0 }} latest islands:</strong>
+          </p>
+          <ul class="list-group">
+            @for (island of latestIslands() ?? []; track island?.objectId) {
+              <li class="list-group-item">
+                <strong>{{ island?.name }}</strong> - {{ island?.short_description }}
+                @if (island?.updatedAt) {
+                  <br />
+                  <small class="text-muted">Last updated: {{ island.updatedAt | date: 'short' }}</small>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+
   <!-- Get Island by ID -->
   <div class="card mb-3">
     <div class="card-header">

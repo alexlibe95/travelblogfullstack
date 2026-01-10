@@ -32,21 +32,20 @@ export class SearchService {
   /**
    * Search islands
    */
-  async searchIslands(query: {
-    q: string;
-  }): Promise<{ data: unknown; error: null } | { data: null; error: Error }> {
+  async searchIslands(query: { q: string }): Promise<{ data: unknown; error: null } | { data: null; error: Error }> {
     const { data, error } = await this.getClient().GET('/api/search', {
       params: {
         query,
       },
     });
-
+    
     if (error) {
       throw new Error(`searchIslands failed: ${JSON.stringify(error)}`);
     }
-
+    
     return { data, error: null };
   }
+
 }
 
 // Export singleton instance

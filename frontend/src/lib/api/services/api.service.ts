@@ -34,13 +34,14 @@ export class ApiService {
    */
   async getRootInfo(): Promise<{ data: unknown; error: null } | { data: null; error: Error }> {
     const { data, error } = await this.getClient().GET('/');
-
+    
     if (error) {
       throw new Error(`getRootInfo failed: ${JSON.stringify(error)}`);
     }
-
+    
     return { data, error: null };
   }
+
 }
 
 // Export singleton instance
