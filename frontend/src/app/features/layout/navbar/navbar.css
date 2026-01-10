@@ -7,10 +7,10 @@
   border-bottom: 1px solid #ffffff;
 }
 
-html[data-bs-theme="dark"] .glass-navbar {
+html[data-bs-theme='dark'] .glass-navbar {
   background: rgba(0, 0, 0, 0.6) !important;
 }
 
-html[data-bs-theme="light"] .glass-navbar {
+html[data-bs-theme='light'] .glass-navbar {
   background: rgba(255, 255, 255, 0.5) !important;
 }

@@ -149,7 +149,9 @@
                 <strong>{{ island?.name }}</strong> - {{ island?.short_description }}
                 @if (island?.updatedAt) {
                   <br />
-                  <small class="text-muted">Last updated: {{ island.updatedAt | date: 'short' }}</small>
+                  <small class="text-muted"
+                    >Last updated: {{ island.updatedAt | date: 'short' }}</small
+                  >
                 }
               </li>
             }

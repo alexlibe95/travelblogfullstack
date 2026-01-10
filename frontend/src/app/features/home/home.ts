@@ -5,6 +5,6 @@ import { Component, ViewEncapsulation } from '@angular/core';
   imports: [],
   templateUrl: './home.html',
   styleUrl: './home.css',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class Home {}

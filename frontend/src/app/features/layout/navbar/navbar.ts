@@ -7,6 +7,6 @@ import { ThemeToggle } from './theme-toggle/theme-toggle';
   imports: [CommonModule, ThemeToggle],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class Navbar {}

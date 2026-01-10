@@ -5,680 +5,680 @@
  */
 
 export type paths = {
-    "/api/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** User login */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["LoginRequest"];
-                };
-            };
-            responses: {
-                /** @description Login successful */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["LoginResponse"];
-                    };
-                };
-                /** @description Bad request - missing username or password */
-                400: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unauthorized - invalid credentials */
-                401: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  '/api/auth/login': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    get?: never;
+    put?: never;
+    /** User login */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['LoginRequest'];
         };
-        get?: never;
-        put?: never;
-        /** User logout */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Logout successful */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["SuccessResponse"];
-                    };
-                };
-                /** @description Unauthorized - missing session token */
-                401: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
+      };
+      responses: {
+        /** @description Login successful */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['LoginResponse'];
+          };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+        /** @description Bad request - missing username or password */
+        400: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+        /** @description Unauthorized - invalid credentials */
+        401: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+      };
     };
-    "/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Health check
-         * @description Returns comprehensive server health status including database and Parse Server connectivity
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Server health status */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": {
-                            /**
-                             * @example ok
-                             * @enum {string}
-                             */
-                            status?: "ok" | "degraded" | "error";
-                            /** Format: date-time */
-                            timestamp?: string;
-                            /** @example 1234.56 */
-                            uptime?: number;
-                            /** @example development */
-                            environment?: string;
-                            /** @example 1.0.0 */
-                            version?: string;
-                            checks?: {
-                                database?: {
-                                    /** @enum {string} */
-                                    status?: "ok" | "error";
-                                    message?: string;
-                                    /** @description Response time in milliseconds */
-                                    responseTime?: number;
-                                };
-                                parseServer?: {
-                                    /** @enum {string} */
-                                    status?: "ok" | "error";
-                                    message?: string;
-                                    /** @description Response time in milliseconds */
-                                    responseTime?: number;
-                                };
-                            };
-                        };
-                    };
-                };
-                /** @description Service unavailable (when health checks fail) */
-                503: {
-                    headers: Record<string, unknown>;
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/auth/logout': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/islands": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    get?: never;
+    put?: never;
+    /** User logout */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Logout successful */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['SuccessResponse'];
+          };
         };
-        /**
-         * Get all islands (list view)
-         * @description Returns a list of all islands with basic information
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description List of islands */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["IslandListResponse"];
-                    };
-                };
-                /** @description Server error */
-                500: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
+        /** @description Unauthorized - missing session token */
+        401: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
         };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/api/islands/latest": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get latest modified islands
-         * @description Returns the 6 most recently modified islands with basic information
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description List of latest islands */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["IslandListResponse"];
-                    };
-                };
-                /** @description Server error */
-                500: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/health': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/islands/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /**
+     * Health check
+     * @description Returns comprehensive server health status including database and Parse Server connectivity
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Server health status */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': {
+              /**
+               * @example ok
+               * @enum {string}
+               */
+              status?: 'ok' | 'degraded' | 'error';
+              /** Format: date-time */
+              timestamp?: string;
+              /** @example 1234.56 */
+              uptime?: number;
+              /** @example development */
+              environment?: string;
+              /** @example 1.0.0 */
+              version?: string;
+              checks?: {
+                database?: {
+                  /** @enum {string} */
+                  status?: 'ok' | 'error';
+                  message?: string;
+                  /** @description Response time in milliseconds */
+                  responseTime?: number;
+                };
+                parseServer?: {
+                  /** @enum {string} */
+                  status?: 'ok' | 'error';
+                  message?: string;
+                  /** @description Response time in milliseconds */
+                  responseTime?: number;
+                };
+              };
+            };
+          };
         };
-        /**
-         * Get island by ID (detail view)
-         * @description Returns detailed information about a specific island
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description Island ID */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Island details */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["IslandDetailResponse"];
-                    };
-                };
-                /** @description Island not found */
-                404: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
+        /** @description Service unavailable (when health checks fail) */
+        503: {
+          headers: Record<string, unknown>;
+          content?: never;
         };
-        /**
-         * Update island
-         * @description Update island information (admin only)
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description Island ID */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateIslandRequest"];
-                };
-            };
-            responses: {
-                /** @description Island updated successfully */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["SuccessResponse"];
-                    };
-                };
-                /** @description Bad request - no valid fields provided */
-                400: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unauthorized - missing or invalid session token */
-                401: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Forbidden - user is not admin */
-                403: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Island not found */
-                404: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/api/islands/{id}/photo": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Upload island photo
-         * @description Upload a photo for an island. Thumbnail is automatically generated (admin only)
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description Island ID */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "multipart/form-data": {
-                        /**
-                         * Format: binary
-                         * @description Image file (max 5MB, JPEG, PNG, GIF, WebP)
-                         */
-                        photo: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Photo uploaded successfully */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["UploadPhotoResponse"];
-                    };
-                };
-                /** @description Bad request - photo file is required or invalid */
-                400: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Unauthorized - missing or invalid session token */
-                401: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Forbidden - user is not admin */
-                403: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Island not found */
-                404: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/islands': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /**
+     * Get all islands (list view)
+     * @description Returns a list of all islands with basic information
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description List of islands */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['IslandListResponse'];
+          };
         };
-        /**
-         * Root endpoint
-         * @description Returns server information and available endpoints
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Server information */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": {
-                            /** @example Parse Server is running 🚀 */
-                            message?: string;
-                            endpoints?: {
-                                /** @example /parse */
-                                parse?: string;
-                                /** @example /dashboard */
-                                dashboard?: string;
-                                /** @example /health */
-                                health?: string;
-                                api?: Record<string, never>;
-                            };
-                        };
-                    };
-                };
-            };
+        /** @description Server error */
+        500: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
         };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/api/search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Search islands
-         * @description Search islands by name, short description, or full description
-         */
-        get: {
-            parameters: {
-                query: {
-                    /**
-                     * @description Search query string
-                     * @example santorini
-                     */
-                    q: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Search results */
-                200: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["SearchResponse"];
-                    };
-                };
-                /** @description Bad request - search query is required */
-                400: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-                /** @description Server error */
-                500: {
-                    headers: Record<string, unknown>;
-                    content: {
-                        "application/json": components["schemas"]["Error"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/islands/latest': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /**
+     * Get latest modified islands
+     * @description Returns the 6 most recently modified islands with basic information
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description List of latest islands */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['IslandListResponse'];
+          };
+        };
+        /** @description Server error */
+        500: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/islands/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get island by ID (detail view)
+     * @description Returns detailed information about a specific island
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description Island ID */
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Island details */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['IslandDetailResponse'];
+          };
+        };
+        /** @description Island not found */
+        404: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+      };
+    };
+    /**
+     * Update island
+     * @description Update island information (admin only)
+     */
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description Island ID */
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'application/json': components['schemas']['UpdateIslandRequest'];
+        };
+      };
+      responses: {
+        /** @description Island updated successfully */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['SuccessResponse'];
+          };
+        };
+        /** @description Bad request - no valid fields provided */
+        400: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+        /** @description Unauthorized - missing or invalid session token */
+        401: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+        /** @description Forbidden - user is not admin */
+        403: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+        /** @description Island not found */
+        404: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+      };
+    };
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/islands/{id}/photo': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Upload island photo
+     * @description Upload a photo for an island. Thumbnail is automatically generated (admin only)
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description Island ID */
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          'multipart/form-data': {
+            /**
+             * Format: binary
+             * @description Image file (max 5MB, JPEG, PNG, GIF, WebP)
+             */
+            photo: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Photo uploaded successfully */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['UploadPhotoResponse'];
+          };
+        };
+        /** @description Bad request - photo file is required or invalid */
+        400: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+        /** @description Unauthorized - missing or invalid session token */
+        401: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+        /** @description Forbidden - user is not admin */
+        403: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+        /** @description Island not found */
+        404: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Root endpoint
+     * @description Returns server information and available endpoints
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Server information */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': {
+              /** @example Parse Server is running 🚀 */
+              message?: string;
+              endpoints?: {
+                /** @example /parse */
+                parse?: string;
+                /** @example /dashboard */
+                dashboard?: string;
+                /** @example /health */
+                health?: string;
+                api?: Record<string, never>;
+              };
+            };
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/search': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Search islands
+     * @description Search islands by name, short description, or full description
+     */
+    get: {
+      parameters: {
+        query: {
+          /**
+           * @description Search query string
+           * @example santorini
+           */
+          q: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Search results */
+        200: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['SearchResponse'];
+          };
+        };
+        /** @description Bad request - search query is required */
+        400: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+        /** @description Server error */
+        500: {
+          headers: Record<string, unknown>;
+          content: {
+            'application/json': components['schemas']['Error'];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 };
 export type webhooks = Record<string, never>;
 export type components = {
-    schemas: {
-        Error: {
-            error?: {
-                /** @description Error message */
-                message?: string;
-                /** @description HTTP status code */
-                statusCode?: number;
-            };
-        };
-        SuccessResponse: {
-            /** @example true */
-            success?: boolean;
-        };
-        LoginRequest: {
-            /** @example admin */
-            username: string;
-            /**
-             * Format: password
-             * @example password123
-             */
-            password: string;
-        };
-        LoginResponse: {
-            /** @example true */
-            success?: boolean;
-            /** @example r:abc123... */
-            sessionToken?: string;
-            user?: {
-                /** @example user123 */
-                id?: string;
-                /** @example admin */
-                username?: string;
-            };
-        };
-        Island: {
-            /** @example island123 */
-            objectId?: string;
-            /** @example Santorini */
-            name?: string;
-            /** @example Beautiful Greek island */
-            short_description?: string;
-            /** @example Full description of the island... */
-            description?: string;
-            /** @example 1 */
-            order?: number;
-            /**
-             * Format: uri
-             * @example https://example.com
-             */
-            site?: string;
-            /**
-             * Format: uri
-             * @example https://example.com/photo.jpg
-             */
-            photo?: string;
-            /**
-             * Format: uri
-             * @example https://example.com/photo_thumb.jpg
-             */
-            photo_thumb?: string;
-            location?: {
-                /** @example 36.3932 */
-                latitude?: number;
-                /** @example 25.4615 */
-                longitude?: number;
-            };
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
-        };
-        IslandListResponse: {
-            /** @example true */
-            success?: boolean;
-            data?: components["schemas"]["Island"][];
-        };
-        IslandDetailResponse: {
-            /** @example true */
-            success?: boolean;
-            data?: components["schemas"]["Island"];
-        };
-        UpdateIslandRequest: {
-            /** @example Updated Island Name */
-            name?: string;
-            /** @example Updated short description */
-            short_description?: string;
-            /** @example Updated full description */
-            description?: string;
-            /** @example 1 */
-            order?: number;
-            /**
-             * Format: uri
-             * @example https://example.com
-             */
-            site?: string;
-            location?: {
-                /** @example 36.3932 */
-                latitude?: number;
-                /** @example 25.4615 */
-                longitude?: number;
-            };
-        };
-        UploadPhotoResponse: {
-            /** @example true */
-            success?: boolean;
-            /**
-             * Format: uri
-             * @example https://example.com/photo.jpg
-             */
-            photoUrl?: string;
-        };
-        SearchResponse: {
-            /** @example true */
-            success?: boolean;
-            /** @example 5 */
-            count?: number;
-            data?: {
-                /** @example island123 */
-                id?: string;
-                /** @example Santorini */
-                name?: string;
-            }[];
-            /** @example No islands found */
-            message?: string;
-        };
+  schemas: {
+    Error: {
+      error?: {
+        /** @description Error message */
+        message?: string;
+        /** @description HTTP status code */
+        statusCode?: number;
+      };
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    SuccessResponse: {
+      /** @example true */
+      success?: boolean;
+    };
+    LoginRequest: {
+      /** @example admin */
+      username: string;
+      /**
+       * Format: password
+       * @example password123
+       */
+      password: string;
+    };
+    LoginResponse: {
+      /** @example true */
+      success?: boolean;
+      /** @example r:abc123... */
+      sessionToken?: string;
+      user?: {
+        /** @example user123 */
+        id?: string;
+        /** @example admin */
+        username?: string;
+      };
+    };
+    Island: {
+      /** @example island123 */
+      objectId?: string;
+      /** @example Santorini */
+      name?: string;
+      /** @example Beautiful Greek island */
+      short_description?: string;
+      /** @example Full description of the island... */
+      description?: string;
+      /** @example 1 */
+      order?: number;
+      /**
+       * Format: uri
+       * @example https://example.com
+       */
+      site?: string;
+      /**
+       * Format: uri
+       * @example https://example.com/photo.jpg
+       */
+      photo?: string;
+      /**
+       * Format: uri
+       * @example https://example.com/photo_thumb.jpg
+       */
+      photo_thumb?: string;
+      location?: {
+        /** @example 36.3932 */
+        latitude?: number;
+        /** @example 25.4615 */
+        longitude?: number;
+      };
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
+    IslandListResponse: {
+      /** @example true */
+      success?: boolean;
+      data?: components['schemas']['Island'][];
+    };
+    IslandDetailResponse: {
+      /** @example true */
+      success?: boolean;
+      data?: components['schemas']['Island'];
+    };
+    UpdateIslandRequest: {
+      /** @example Updated Island Name */
+      name?: string;
+      /** @example Updated short description */
+      short_description?: string;
+      /** @example Updated full description */
+      description?: string;
+      /** @example 1 */
+      order?: number;
+      /**
+       * Format: uri
+       * @example https://example.com
+       */
+      site?: string;
+      location?: {
+        /** @example 36.3932 */
+        latitude?: number;
+        /** @example 25.4615 */
+        longitude?: number;
+      };
+    };
+    UploadPhotoResponse: {
+      /** @example true */
+      success?: boolean;
+      /**
+       * Format: uri
+       * @example https://example.com/photo.jpg
+       */
+      photoUrl?: string;
+    };
+    SearchResponse: {
+      /** @example true */
+      success?: boolean;
+      /** @example 5 */
+      count?: number;
+      data?: {
+        /** @example island123 */
+        id?: string;
+        /** @example Santorini */
+        name?: string;
+      }[];
+      /** @example No islands found */
+      message?: string;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 };
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;
