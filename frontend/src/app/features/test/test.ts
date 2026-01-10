@@ -1,6 +1,6 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { 
   authenticationService, 
   healthService, 
@@ -18,7 +18,7 @@ type SearchResponse = components['schemas']['SearchResponse'];
 
 @Component({
   selector: 'app-test',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './test.html',
   styleUrl: './test.css',
 })
@@ -35,13 +35,39 @@ export class Test implements OnInit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected readonly rootInfo = signal<any>(null);
 
-  // Form inputs
-  protected loginUsername = '';
-  protected loginPassword = '';
-  protected searchQuery = '';
-  protected islandId = '';
-  protected updateName = '';
-  protected updateDescription = '';
+  // Inject FormBuilder using inject() function (Angular 21 best practice)
+  private readonly fb = inject(FormBuilder);
+
+  // Reactive forms
+  protected readonly loginForm: FormGroup;
+  protected readonly searchForm: FormGroup;
+  protected readonly islandIdForm: FormGroup;
+  protected readonly updateIslandForm: FormGroup;
+
+  constructor() {
+    // Login form
+    this.loginForm = this.fb.group({
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+    });
+
+    // Search form
+    this.searchForm = this.fb.group({
+      query: ['', [Validators.required, Validators.minLength(1)]],
+    });
+
+    // Island ID form (used for get by ID, update, and upload)
+    this.islandIdForm = this.fb.group({
+      id: ['', [Validators.required]],
+    });
+
+    // Update island form
+    this.updateIslandForm = this.fb.group({
+      id: ['', [Validators.required]],
+      name: [''],
+      description: [''],
+    });
+  }
 
   /**
    * 1. Health Check - GET /health
@@ -102,8 +128,9 @@ export class Test implements OnInit {
    * Authenticate user and get session token
    */
   async login(): Promise<void> {
-    if (!this.loginUsername || !this.loginPassword) {
-      this.error.set('Username and password are required');
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      this.error.set('Please fill in all required fields');
       return;
     }
 
@@ -111,9 +138,10 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
+      const formValue = this.loginForm.value;
       const result = await authenticationService.login({
-        username: this.loginUsername,
-        password: this.loginPassword,
+        username: formValue.username,
+        password: formValue.password,
       });
       
       if (result.error) {
@@ -133,6 +161,8 @@ export class Test implements OnInit {
         }
         
         console.log('✅ Login successful:', loginData.user);
+        // Reset login form after successful login
+        this.loginForm.reset();
       }
     } catch (err) {
       this.error.set(`Login error: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -170,6 +200,9 @@ export class Test implements OnInit {
         // Clear auth tokens from all services
         authenticationService.clearAuthToken();
         islandsService.clearAuthToken();
+        
+        // Reset forms
+        this.updateIslandForm.reset();
       }
     } catch (err) {
       this.error.set(`Logout error: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -211,7 +244,8 @@ export class Test implements OnInit {
    * Public endpoint to get detailed island information
    */
   async getIslandById(): Promise<void> {
-    if (!this.islandId.trim()) {
+    if (this.islandIdForm.invalid) {
+      this.islandIdForm.markAllAsTouched();
       this.error.set('Island ID is required');
       return;
     }
@@ -220,7 +254,8 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const result = await islandsService.getByIdIsland(this.islandId);
+      const islandId = this.islandIdForm.value.id;
+      const result = await islandsService.getByIdIsland(islandId);
       
       if (result.error) {
         this.error.set(`Failed to fetch island: ${result.error.message}`);
@@ -250,7 +285,8 @@ export class Test implements OnInit {
       return;
     }
 
-    if (!this.islandId.trim()) {
+    if (this.updateIslandForm.invalid) {
+      this.updateIslandForm.markAllAsTouched();
       this.error.set('Island ID is required');
       return;
     }
@@ -259,13 +295,14 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
+      const formValue = this.updateIslandForm.value;
       const updates: UpdateIslandRequest = {};
       
-      if (this.updateName) {
-        updates.name = this.updateName;
+      if (formValue.name) {
+        updates.name = formValue.name;
       }
-      if (this.updateDescription) {
-        updates.description = this.updateDescription;
+      if (formValue.description) {
+        updates.description = formValue.description;
       }
 
       if (Object.keys(updates).length === 0) {
@@ -274,7 +311,7 @@ export class Test implements OnInit {
         return;
       }
 
-      const result = await islandsService.updateIsland(this.islandId, updates);
+      const result = await islandsService.updateIsland(formValue.id, updates);
       
       if (result.error) {
         this.error.set(`Failed to update island: ${result.error.message}`);
@@ -284,6 +321,7 @@ export class Test implements OnInit {
       if (result.data) {
         console.log('✅ Island updated successfully');
         // Refresh the island data
+        this.islandIdForm.patchValue({ id: formValue.id });
         await this.getIslandById();
       }
     } catch (err) {
@@ -304,7 +342,8 @@ export class Test implements OnInit {
       return;
     }
 
-    if (!this.islandId.trim()) {
+    if (this.islandIdForm.invalid) {
+      this.islandIdForm.markAllAsTouched();
       this.error.set('Island ID is required');
       return;
     }
@@ -316,11 +355,12 @@ export class Test implements OnInit {
     }
 
     const photoFile = input.files[0];
+    const islandId = this.islandIdForm.value.id;
     this.isLoading.set(true);
     this.error.set(null);
     
     try {
-      const result = await islandsService.uploadPhotoIsland(this.islandId, photoFile);
+      const result = await islandsService.uploadPhotoIsland(islandId, photoFile);
       
       if (result.error) {
         this.error.set(`Failed to upload photo: ${result.error.message}`);
@@ -344,7 +384,8 @@ export class Test implements OnInit {
    * Search islands by name, short description, or full description
    */
   async searchIslands(): Promise<void> {
-    if (!this.searchQuery.trim()) {
+    if (this.searchForm.invalid) {
+      this.searchForm.markAllAsTouched();
       this.error.set('Search query is required');
       return;
     }
@@ -353,7 +394,8 @@ export class Test implements OnInit {
     this.error.set(null);
     
     try {
-      const result = await searchService.searchIslands({ q: this.searchQuery });
+      const query = this.searchForm.value.query;
+      const result = await searchService.searchIslands({ q: query });
       
       if (result.error) {
         this.error.set(`Search failed: ${result.error.message}`);
@@ -363,7 +405,7 @@ export class Test implements OnInit {
       if (result.data && typeof result.data === 'object' && result.data !== null && 'data' in result.data) {
         const searchData = result.data as SearchResponse;
         this.searchResults.set(searchData.data || []);
-        console.log(`✅ Found ${searchData.count || 0} results for "${this.searchQuery}"`);
+        console.log(`✅ Found ${searchData.count || 0} results for "${query}"`);
       }
     } catch (err) {
       this.error.set(`Search error: ${err instanceof Error ? err.message : 'Unknown error'}`);
