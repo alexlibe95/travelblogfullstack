@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "prestart": "npm run sass:build && npm run api:generate",
+    "prestart": "npm run sass:build && npm run api:generate && npm run format",
     "start": "ng serve",
-    "prebuild": "npm run sass:build && npm run api:generate",
+    "prebuild": "npm run sass:build && npm run api:generate && npm run format",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
