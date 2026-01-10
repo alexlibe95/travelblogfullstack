@@ -87,7 +87,7 @@ npm run generate:services
 
 See [frontend/src/lib/api/README.md](./frontend/src/lib/api/README.md) for detailed usage examples.
 
-**Quick example with service classes (recommended):**
+**Quick example:**
 ```typescript
 import { 
   authenticationService, 
@@ -112,21 +112,6 @@ const islands = await islandsService.getAllIsland();
 
 // Search islands (case-insensitive)
 const searchResults = await searchService.searchIslands({ q: 'santorini' });
-```
-
-**Alternative: Using base client directly**
-```typescript
-import { apiClient, createAuthenticatedClient } from './lib/api/client';
-
-// Public endpoint
-const { data } = await apiClient.GET('/api/islands');
-
-// Authenticated endpoint
-const authClient = createAuthenticatedClient('session-token');
-const { data } = await authClient.PUT('/api/islands/{id}', {
-  params: { path: { id: 'island123' } },
-  body: { name: 'Updated Name' },
-});
 ```
 
 ### Regenerating After API Changes

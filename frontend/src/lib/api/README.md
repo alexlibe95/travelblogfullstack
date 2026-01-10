@@ -31,7 +31,7 @@ This command will:
 ## Generated Files
 
 - **`types.ts`** - TypeScript type definitions for all API endpoints and schemas
-- **`client.ts`** - Base API client using `openapi-fetch`
+- **`client.ts`** - Base API client (internal, used by services)
 - **`services/`** - Service classes with methods for each endpoint:
   - `authentication.service.ts` - Login, logout
   - `islands.service.ts` - Island CRUD operations
@@ -41,8 +41,6 @@ This command will:
   - `index.ts` - Exports all services
 
 ## Usage
-
-### Option 1: Using Service Classes (Recommended)
 
 The service classes provide a clean, type-safe API with automatic authentication handling:
 
@@ -79,29 +77,6 @@ const updateResult = await islandsService.updateIsland('island123', {
 
 // Upload photo
 const uploadResult = await islandsService.uploadPhotoIsland('island123', file);
-```
-
-### Option 2: Using Base Client
-
-For more control, you can use the base client directly:
-
-```typescript
-import { apiClient, createAuthenticatedClient } from './lib/api/client';
-import type { paths } from './lib/api/types';
-
-// For unauthenticated requests
-const { data, error } = await apiClient.GET('/api/islands');
-
-// For authenticated requests (after login)
-const token = 'your-session-token';
-const authClient = createAuthenticatedClient(token);
-
-const loginResult = await authClient.POST('/api/auth/login', {
-  body: {
-    username: 'admin',
-    password: 'password123',
-  },
-});
 ```
 
 ## Service Classes Features
