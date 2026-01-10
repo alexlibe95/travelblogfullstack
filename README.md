@@ -10,8 +10,14 @@ travelblogfullstack/
 │   ├── src/         # Backend source code
 │   ├── cloud/       # Parse Cloud Code
 │   ├── tests/       # Backend tests
+│   ├── openapi.json # Exported OpenAPI specification
 │   └── README.md    # Backend documentation
-├── frontend/         # Frontend application (to be implemented)
+├── frontend/         # Angular frontend application
+│   ├── src/
+│   │   ├── app/     # Angular application code
+│   │   └── lib/
+│   │       └── api/  # Auto-generated API client and services
+│   └── README.md    # Frontend documentation
 └── README.md         # This file
 ```
 
@@ -29,7 +35,15 @@ npm run dev
 
 ### Frontend
 
-Frontend implementation coming soon.
+See [frontend/README.md](./frontend/README.md) for frontend setup and documentation.
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+The frontend automatically generates the API client before starting (via `prestart` hook).
 
 ## Development
 
@@ -38,7 +52,11 @@ Frontend implementation coming soon.
 
 ## API Client Generation
 
-The frontend includes an auto-generated TypeScript API client created from the backend's Swagger/OpenAPI specification.
+The frontend includes auto-generated TypeScript API client code created from the backend's Swagger/OpenAPI specification. This includes:
+
+- **Type definitions** (`types.ts`) - Full TypeScript types for all endpoints and schemas
+- **Base client** (`client.ts`) - Type-safe fetch client using `openapi-fetch`
+- **Service classes** (`services/*.service.ts`) - High-level service classes with methods for each endpoint
 
 ### Generating the API Client
 
@@ -50,29 +68,65 @@ npm run api:generate
 
 This will:
 1. Export the OpenAPI spec from the backend to `backend/openapi.json`
-2. Generate TypeScript client code in `frontend/src/lib/api`
+2. Generate TypeScript types and client in `frontend/src/lib/api`
+3. Generate service classes in `frontend/src/lib/api/services`
 
-**Option 2: From running server**
+**Option 2: Manual generation**
 ```bash
-# Make sure backend is running first
-cd backend && npm run dev
+# Export OpenAPI spec
+cd backend && npm run export:openapi
 
-# In another terminal, from frontend directory
-npm run generate:api:url
+# Generate types and client
+cd ../frontend && npm run generate:api
+
+# Generate service classes
+npm run generate:services
 ```
 
 ### Using the Generated Client
 
 See [frontend/src/lib/api/README.md](./frontend/src/lib/api/README.md) for detailed usage examples.
 
-**Quick example:**
+**Quick example with service classes (recommended):**
 ```typescript
-import { ApiClient } from './lib/api';
-import { AuthService } from './lib/api/services/AuthService';
+import { 
+  authenticationService, 
+  islandsService, 
+  searchService 
+} from './lib/api/services';
 
-const apiClient = new ApiClient({ baseUrl: 'http://localhost:5000' });
-const authService = new AuthService(apiClient);
-const result = await authService.login({ username: 'admin', password: 'pass' });
+// Login
+const result = await authenticationService.login({
+  username: 'admin',
+  password: 'password123',
+});
+
+if (result.data?.sessionToken) {
+  // Set auth token for authenticated requests
+  authenticationService.setAuthToken(result.data.sessionToken);
+  islandsService.setAuthToken(result.data.sessionToken);
+}
+
+// Get all islands
+const islands = await islandsService.getAllIsland();
+
+// Search islands (case-insensitive)
+const searchResults = await searchService.searchIslands({ q: 'santorini' });
+```
+
+**Alternative: Using base client directly**
+```typescript
+import { apiClient, createAuthenticatedClient } from './lib/api/client';
+
+// Public endpoint
+const { data } = await apiClient.GET('/api/islands');
+
+// Authenticated endpoint
+const authClient = createAuthenticatedClient('session-token');
+const { data } = await authClient.PUT('/api/islands/{id}', {
+  params: { path: { id: 'island123' } },
+  body: { name: 'Updated Name' },
+});
 ```
 
 ### Regenerating After API Changes
@@ -80,7 +134,9 @@ const result = await authService.login({ username: 'admin', password: 'pass' });
 Whenever you update the backend API (add endpoints, change schemas, etc.):
 1. Update your Swagger annotations in the backend controllers
 2. Run `npm run api:generate` from the frontend directory
-3. The generated client will be updated automatically
+3. The generated types, client, and services will be updated automatically
+
+**Note:** The API client is automatically regenerated before starting the dev server (`npm start`) and before building (`npm run build`).
 
 ## Documentation
 
