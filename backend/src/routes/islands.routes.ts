@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   getIslands,
   getIslandById,
+  getLatestIslands,
   updateIsland,
   uploadIslandPhoto,
 } from '../controllers/islands.controller.js';
@@ -33,6 +34,29 @@ export const islandRoutes = Router();
  *               $ref: '#/components/schemas/Error'
  */
 islandRoutes.get(ROUTES.API.ISLANDS, getIslands);
+
+/**
+ * @swagger
+ * /api/islands/latest:
+ *   get:
+ *     summary: Get latest modified islands
+ *     tags: [Islands]
+ *     description: Returns the 6 most recently modified islands with basic information
+ *     responses:
+ *       200:
+ *         description: List of latest islands
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/IslandListResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+islandRoutes.get(ROUTES.API.ISLANDS_LATEST, getLatestIslands);
 
 /**
  * @swagger

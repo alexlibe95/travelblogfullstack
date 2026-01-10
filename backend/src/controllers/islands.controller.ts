@@ -36,6 +36,35 @@ export async function getIslands(_req: Request, res: Response, next: NextFunctio
   }
 }
 
+export async function getLatestIslands(_req: Request, res: Response, next: NextFunction) {
+  try {
+    const query = new Parse.Query(ISLAND_CLASS_NAME);
+    // Order by updatedAt descending (most recently modified first)
+    query.descending(ISLAND_FIELDS.UPDATED_AT);
+    // Include updatedAt in selection since we need it for sorting and it's useful for the frontend
+    query.select(...ISLAND_LIST_FIELDS, ISLAND_FIELDS.UPDATED_AT);
+    // Limit to 6 latest islands
+    query.limit(6);
+
+    // Public read - no master key needed (schema allows find: { '*': true })
+    const islands = await query.find();
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: islands.map((i) => i.toJSON()),
+    });
+  } catch (error) {
+    // If it's already an ApplicationError, pass it through
+    if (error instanceof ApplicationError) {
+      next(error);
+      return;
+    }
+    // Log unexpected errors for debugging
+    logger.error({ error }, 'Failed to fetch latest islands');
+    next(new ApplicationError('Failed to fetch latest islands', HTTP_STATUS.INTERNAL_SERVER_ERROR));
+  }
+}
+
 export async function getIslandById(req: Request, res: Response, next: NextFunction) {
   try {
     const query = new Parse.Query(ISLAND_CLASS_NAME);

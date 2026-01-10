@@ -247,18 +247,20 @@ describe('Search API Endpoints (Integration)', () => {
       expect(response.body).toHaveProperty('message', 'No islands found');
     });
 
-    it('should handle case-sensitive search', async () => {
-      // contains() is case-sensitive, so "santorini" (lowercase) should not match "Santorini"
+    it('should handle case-insensitive search', async () => {
+      // Search is case-insensitive using matches() with regex, so "santorini" (lowercase) should match "Santorini"
       const response = await request(app).get(`${ROUTES.API.SEARCH}?q=santorini`);
       expect(response.status).toBe(HTTP_STATUS.OK);
-      // This test documents the current behavior - case-sensitive search
-      // If case-insensitive search is needed, the controller would need to be updated
-      expect(response.body[API_RESPONSE_KEYS.COUNT]).toBe(0);
+      expect(response.body[API_RESPONSE_KEYS.COUNT]).toBeGreaterThan(0);
+      const names = response.body[API_RESPONSE_KEYS.DATA].map(
+        (island: { name: string }) => island.name
+      );
+      expect(names).toContain('Santorini');
     });
 
     it('should handle partial word matches', async () => {
-      // Search is case-sensitive, so "Beautiful" (capital B) matches Santorini
-      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=Beautiful`);
+      // Search is case-insensitive, so "beautiful" (lowercase) should match "Beautiful" in Santorini's description
+      const response = await request(app).get(`${ROUTES.API.SEARCH}?q=beautiful`);
       expect(response.status).toBe(HTTP_STATUS.OK);
       expect(response.body[API_RESPONSE_KEYS.COUNT]).toBeGreaterThan(0);
       const names = response.body[API_RESPONSE_KEYS.DATA].map(

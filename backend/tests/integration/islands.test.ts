@@ -159,12 +159,40 @@ describe('Islands API Endpoints (Integration)', () => {
     testIslandId = mockIslands[0].id;
 
     // Mount API routes (replicate controller behavior - but use schema field names)
+    // IMPORTANT: Register specific routes BEFORE parameterized routes to avoid conflicts
+    // /api/islands/latest must come before /api/islands/:id
+    
     app.get(ROUTES.API.ISLANDS, async (_req, res, next) => {
       try {
         const query = new Parse.Query(ISLAND_CLASS_NAME);
         query.ascending(ISLAND_FIELDS.ORDER);
         // Select fields that match the schema (name, short_description, etc.)
         query.select(...ISLAND_LIST_FIELDS);
+        const islands = await query.find({ useMasterKey: true });
+        res.status(HTTP_STATUS.OK).json({
+          [API_RESPONSE_KEYS.SUCCESS]: true,
+          [API_RESPONSE_KEYS.DATA]: islands.map((i) => i.toJSON()),
+        });
+      } catch (error) {
+        next(
+          new ApplicationError(
+            error instanceof Error ? error.message : ISLAND_ERROR_MESSAGES.FETCH_FAILED,
+            HTTP_STATUS.INTERNAL_SERVER_ERROR
+          )
+        );
+      }
+    });
+
+    // Register /api/islands/latest BEFORE /api/islands/:id to avoid route conflict
+    app.get(ROUTES.API.ISLANDS_LATEST, async (_req, res, next) => {
+      try {
+        const query = new Parse.Query(ISLAND_CLASS_NAME);
+        // Order by updatedAt descending (most recently modified first)
+        query.descending(ISLAND_FIELDS.UPDATED_AT);
+        // Include updatedAt in selection since we need it for sorting
+        query.select(...ISLAND_LIST_FIELDS, ISLAND_FIELDS.UPDATED_AT);
+        // Limit to 6 latest islands
+        query.limit(6);
         const islands = await query.find({ useMasterKey: true });
         res.status(HTTP_STATUS.OK).json({
           [API_RESPONSE_KEYS.SUCCESS]: true,
@@ -358,6 +386,117 @@ describe('Islands API Endpoints (Integration)', () => {
       expect(updatedAt.getTime()).toBeGreaterThan(0);
       expect(createdAt.toISOString()).toBe(island.createdAt);
       expect(updatedAt.toISOString()).toBe(island.updatedAt);
+    });
+  });
+
+  describe('GET /api/islands/latest', () => {
+    it('should return 200 status code', async () => {
+      const response = await request(app).get(ROUTES.API.ISLANDS_LATEST);
+      expect(response.status).toBe(HTTP_STATUS.OK);
+    });
+
+    it('should return success response structure', async () => {
+      const response = await request(app).get(ROUTES.API.ISLANDS_LATEST);
+      expect(response.body).toHaveProperty(API_RESPONSE_KEYS.SUCCESS, true);
+      expect(response.body).toHaveProperty(API_RESPONSE_KEYS.DATA);
+      expect(Array.isArray(response.body[API_RESPONSE_KEYS.DATA])).toBe(true);
+    });
+
+    it('should return at most 6 islands', async () => {
+      const response = await request(app).get(ROUTES.API.ISLANDS_LATEST);
+      const islands = response.body[API_RESPONSE_KEYS.DATA];
+      expect(islands.length).toBeLessThanOrEqual(6);
+    });
+
+    it('should return islands sorted by updatedAt descending (most recent first)', async () => {
+      const response = await request(app).get(ROUTES.API.ISLANDS_LATEST);
+      const islands = response.body[API_RESPONSE_KEYS.DATA];
+
+      // Verify islands are sorted by updatedAt descending
+      for (let i = 0; i < islands.length - 1; i++) {
+        const currentUpdatedAt = new Date(islands[i].updatedAt).getTime();
+        const nextUpdatedAt = new Date(islands[i + 1].updatedAt).getTime();
+        expect(currentUpdatedAt).toBeGreaterThanOrEqual(nextUpdatedAt);
+      }
+    });
+
+    it('should return only basic fields for list view', async () => {
+      const response = await request(app).get(ROUTES.API.ISLANDS_LATEST);
+      const islands = response.body[API_RESPONSE_KEYS.DATA];
+
+      if (islands.length > 0) {
+        const island = islands[0];
+        expect(island).toBeDefined();
+        expect(island).toHaveProperty('objectId');
+        expect(island).toHaveProperty('name');
+        expect(island).toHaveProperty('short_description');
+        expect(island).toHaveProperty('order');
+        expect(island).toHaveProperty('updatedAt');
+        // Photo fields are optional and not set in tests (require file adapter)
+        // Detail fields should not be present
+        expect(island).not.toHaveProperty('description');
+        expect(island).not.toHaveProperty('site');
+        expect(island).not.toHaveProperty('location');
+        expect(island).not.toHaveProperty('photo');
+      }
+    });
+
+    it('should return all available islands when less than 6 exist', async () => {
+      const response = await request(app).get(ROUTES.API.ISLANDS_LATEST);
+      const islands = response.body[API_RESPONSE_KEYS.DATA];
+
+      // We created 3 islands in beforeAll, so should return all 3
+      expect(islands.length).toBe(3);
+    });
+
+    it('should return correct mock data', async () => {
+      const response = await request(app).get(ROUTES.API.ISLANDS_LATEST);
+      const islands = response.body[API_RESPONSE_KEYS.DATA];
+
+      // Check that we have the expected islands
+      const names = islands.map((island: { name: string }) => island.name);
+      expect(names).toContain('Santorini');
+      expect(names).toContain('Maldives');
+      expect(names).toContain('Bali');
+    });
+
+    it('should return islands with valid updatedAt timestamps', async () => {
+      const response = await request(app).get(ROUTES.API.ISLANDS_LATEST);
+      const islands = response.body[API_RESPONSE_KEYS.DATA];
+
+      expect(islands.length).toBeGreaterThan(0);
+      islands.forEach((island: { updatedAt?: string }) => {
+        expect(island).toHaveProperty('updatedAt');
+        expect(island.updatedAt).toBeDefined();
+        expect(typeof island.updatedAt).toBe('string');
+        const updatedAt = new Date(island.updatedAt!);
+        expect(updatedAt.getTime()).toBeGreaterThan(0);
+        expect(Number.isNaN(updatedAt.getTime())).toBe(false);
+        expect(updatedAt.toISOString()).toBe(island.updatedAt);
+      });
+    });
+
+    it('should return latest modified islands when islands are updated', async () => {
+      const islandToUpdate = await new Parse.Query(ISLAND_CLASS_NAME)
+        .equalTo(ISLAND_FIELDS.NAME, 'Bali')
+        .first({ useMasterKey: true });
+
+      if (islandToUpdate) {
+        // Update the island to trigger updatedAt change
+        islandToUpdate.set(ISLAND_FIELDS.SHORT_DESCRIPTION, 'Updated description');
+        await islandToUpdate.save(null, { useMasterKey: true });
+
+        // Wait a bit to ensure timestamp difference
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Fetch latest islands
+        const response = await request(app).get(ROUTES.API.ISLANDS_LATEST);
+        const islands = response.body[API_RESPONSE_KEYS.DATA];
+
+        // The updated island should be first
+        expect(islands[0].name).toBe('Bali');
+        expect(islands[0].short_description).toBe('Updated description');
+      }
     });
   });
 });
