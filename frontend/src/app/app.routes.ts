@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Home } from './features/home/home';
 import { IslandDetails } from './features/island-details/island-details';
 import { Admin } from './features/admin/admin';
+import { Test } from './features/test/test';
 
 export const routes: Routes = [
   {
@@ -13,6 +14,11 @@ export const routes: Routes = [
     path: 'admin',
     component: Admin,
     title: 'Admin - Travel Blog',
+  },
+  {
+    path: 'test',
+    component: Test,
+    title: 'API Test - Travel Blog',
   },
   {
     path: ':id',

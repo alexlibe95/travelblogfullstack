@@ -1,0 +1,193 @@
+<div class="container mt-4">
+  <h1>API Test Page</h1>
+  <p class="text-muted">Test all available API endpoints</p>
+
+  <!-- Status Display -->
+  @if (error(); as errorMsg) {
+    <div class="alert alert-danger" role="alert">
+      <strong>Error:</strong> {{ errorMsg }}
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="alert alert-info" role="alert">
+      Loading...
+    </div>
+  }
+
+  @if (sessionToken(); as token) {
+    <div class="alert alert-success" role="alert">
+      <strong>Authenticated:</strong> Session token active
+    </div>
+  }
+
+  <!-- Health Check -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>1. Health Check - GET /health</h5>
+    </div>
+    <div class="card-body">
+      <button class="btn btn-primary" (click)="checkHealth()" [disabled]="isLoading()">
+        Check Health
+      </button>
+      @if (healthStatus(); as health) {
+        <pre class="mt-3">{{ health | json }}</pre>
+      }
+    </div>
+  </div>
+
+  <!-- Root Endpoint -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>2. Root Endpoint - GET /</h5>
+    </div>
+    <div class="card-body">
+      <button class="btn btn-primary" (click)="getRootInfo()" [disabled]="isLoading()">
+        Get Root Info
+      </button>
+      @if (rootInfo(); as info) {
+        <pre class="mt-3">{{ info | json }}</pre>
+      }
+    </div>
+  </div>
+
+  <!-- Authentication -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>3. Authentication</h5>
+    </div>
+    <div class="card-body">
+      @if (!sessionToken()) {
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" [(ngModel)]="loginUsername" placeholder="admin">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" [(ngModel)]="loginPassword" placeholder="password">
+        </div>
+        <button class="btn btn-success" (click)="login()" [disabled]="isLoading()">
+          Login - POST /api/auth/login
+        </button>
+      } @else {
+        <button class="btn btn-warning" (click)="logout()" [disabled]="isLoading()">
+          Logout - POST /api/auth/logout
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Get All Islands -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>4. Get All Islands - GET /api/islands</h5>
+    </div>
+    <div class="card-body">
+      <button class="btn btn-primary" (click)="getAllIslands()" [disabled]="isLoading()">
+        Fetch All Islands
+      </button>
+      @if (islands() && (islands()?.length ?? 0) > 0) {
+        <div class="mt-3">
+          <p><strong>Found {{ islands()?.length ?? 0 }} islands:</strong></p>
+          <ul class="list-group">
+            @for (island of islands() ?? []; track island?.objectId) {
+              <li class="list-group-item">
+                <strong>{{ island?.name }}</strong> - {{ island?.short_description }}
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Get Island by ID -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>5. Get Island by ID - GET /api/islands/&#123;id&#125;</h5>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label">Island ID</label>
+        <input type="text" class="form-control" [(ngModel)]="islandId" placeholder="Enter island ID">
+      </div>
+      <button class="btn btn-primary" (click)="getIslandById()" [disabled]="isLoading()">
+        Get Island Details
+      </button>
+      @if (selectedIsland(); as island) {
+        <div class="mt-3">
+          <pre>{{ island | json }}</pre>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Update Island -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>6. Update Island - PUT /api/islands/&#123;id&#125; (Admin Only)</h5>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label">Island ID</label>
+        <input type="text" class="form-control" [(ngModel)]="islandId" placeholder="Enter island ID">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Name (optional)</label>
+        <input type="text" class="form-control" [(ngModel)]="updateName" placeholder="New name">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Description (optional)</label>
+        <textarea class="form-control" [(ngModel)]="updateDescription" placeholder="New description"></textarea>
+      </div>
+      <button class="btn btn-warning" (click)="updateIsland()" [disabled]="isLoading() || !sessionToken()">
+        Update Island
+      </button>
+    </div>
+  </div>
+
+  <!-- Upload Photo -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>7. Upload Photo - POST /api/islands/&#123;id&#125;/photo (Admin Only)</h5>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label">Island ID</label>
+        <input type="text" class="form-control" [(ngModel)]="islandId" placeholder="Enter island ID">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Photo File</label>
+        <input type="file" class="form-control" accept="image/*" (change)="uploadIslandPhoto($event)" [disabled]="isLoading() || !sessionToken()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Islands -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>8. Search Islands - GET /api/search?q=&#123;query&#125;</h5>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label">Search Query</label>
+        <input type="text" class="form-control" [(ngModel)]="searchQuery" placeholder="Enter search term">
+      </div>
+      <button class="btn btn-primary" (click)="searchIslands()" [disabled]="isLoading()">
+        Search
+      </button>
+      @if (searchResults() && (searchResults()?.length ?? 0) > 0) {
+        <div class="mt-3">
+          <p><strong>Search Results:</strong></p>
+          <ul class="list-group">
+            @for (result of searchResults() ?? []; track result?.id) {
+              <li class="list-group-item">
+                <strong>{{ result?.name }}</strong> (ID: {{ result?.id }})
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+</div>
