@@ -59,11 +59,11 @@
     <div class="card-body">
       @if (!sessionToken()) {
         <div class="mb-3">
-          <label class="form-label">Username</label>
+          <label for="loginUsername" class="form-label">Username</label>
           <input type="text" class="form-control" [(ngModel)]="loginUsername" placeholder="admin">
         </div>
         <div class="mb-3">
-          <label class="form-label">Password</label>
+          <label for="loginPassword" class="form-label">Password</label>
           <input type="password" class="form-control" [(ngModel)]="loginPassword" placeholder="password">
         </div>
         <button class="btn btn-success" (click)="login()" [disabled]="isLoading()">
@@ -108,7 +108,7 @@
     </div>
     <div class="card-body">
       <div class="mb-3">
-        <label class="form-label">Island ID</label>
+        <label for="islandId" class="form-label">Island ID</label>
         <input type="text" class="form-control" [(ngModel)]="islandId" placeholder="Enter island ID">
       </div>
       <button class="btn btn-primary" (click)="getIslandById()" [disabled]="isLoading()">
@@ -129,15 +129,15 @@
     </div>
     <div class="card-body">
       <div class="mb-3">
-        <label class="form-label">Island ID</label>
+        <label for="islandId" class="form-label">Island ID</label>
         <input type="text" class="form-control" [(ngModel)]="islandId" placeholder="Enter island ID">
       </div>
       <div class="mb-3">
-        <label class="form-label">Name (optional)</label>
+        <label for="updateName" class="form-label">Name (optional)</label>
         <input type="text" class="form-control" [(ngModel)]="updateName" placeholder="New name">
       </div>
       <div class="mb-3">
-        <label class="form-label">Description (optional)</label>
+        <label for="updateDescription" class="form-label">Description (optional)</label>
         <textarea class="form-control" [(ngModel)]="updateDescription" placeholder="New description"></textarea>
       </div>
       <button class="btn btn-warning" (click)="updateIsland()" [disabled]="isLoading() || !sessionToken()">
@@ -153,11 +153,11 @@
     </div>
     <div class="card-body">
       <div class="mb-3">
-        <label class="form-label">Island ID</label>
+        <label for="islandId" class="form-label">Island ID</label>
         <input type="text" class="form-control" [(ngModel)]="islandId" placeholder="Enter island ID">
       </div>
       <div class="mb-3">
-        <label class="form-label">Photo File</label>
+        <label for="photoFile" class="form-label">Photo File</label>
         <input type="file" class="form-control" accept="image/*" (change)="uploadIslandPhoto($event)" [disabled]="isLoading() || !sessionToken()">
       </div>
     </div>
@@ -170,7 +170,7 @@
     </div>
     <div class="card-body">
       <div class="mb-3">
-        <label class="form-label">Search Query</label>
+        <label for="searchQuery" class="form-label">Search Query</label>
         <input type="text" class="form-control" [(ngModel)]="searchQuery" placeholder="Enter search term">
       </div>
       <button class="btn btn-primary" (click)="searchIslands()" [disabled]="isLoading()">
