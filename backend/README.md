@@ -198,6 +198,7 @@ travelblogfullstack/
 | `npm start`                   | Start the production server                                                                                      |
 | `npm run dev`                 | Start development server with auto-reload                                                                        |
 | `npm run build`               | Compile TypeScript to JavaScript                                                                                 |
+| `npm run export:openapi`      | Export OpenAPI/Swagger specification to `openapi.json` (used by frontend for API client generation)             |
 | `npm test`                    | Run tests in watch mode                                                                                          |
 | `npm run test:run`            | Run tests once (CI mode)                                                                                         |
 | `npm run test:ui`             | Run tests with Vitest UI                                                                                         |
@@ -449,6 +450,11 @@ file: [image file]
 GET /api/search?q=santorini
 ```
 
+**Features**:
+- **Case-insensitive search** - Searches match regardless of case (e.g., "lesbo" matches "Lesbos")
+- **Multi-field search** - Searches across island name, short description, and full description
+- **Partial matching** - Finds islands containing the search term anywhere in the text
+
 **Response**:
 
 ```json
@@ -545,8 +551,12 @@ The application uses Parse Server's schema management system. Schemas are define
 ### CORS Configuration
 
 - Configurable allowed origins
-- Development: `http://localhost:3000`, `http://localhost:4200`, `http://localhost:5173`
-- Production: Configure via `ALLOWED_ORIGINS` environment variable
+- Development: 
+  - Pre-configured: `http://localhost:3000`, `http://localhost:4200`, `http://localhost:5173`
+  - Any `http://localhost:*` origin is automatically allowed for flexibility
+- Production: Configure via `ALLOWED_ORIGINS` environment variable (comma-separated)
+- **Credentials support**: CORS configured to allow credentials (`Access-Control-Allow-Credentials: true`)
+- **Custom headers**: Supports `x-parse-session-token` header for authenticated requests
 
 ### Security Headers
 
