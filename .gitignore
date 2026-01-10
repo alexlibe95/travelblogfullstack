@@ -47,3 +47,6 @@ coverage/
 
 # Cursor
 .cursor/
+
+# Generated OpenAPI spec
+backend/openapi.json

@@ -16,7 +16,8 @@
     "test:coverage:watch": "vitest --coverage --watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"**/*.{ts,js,json,md}\""
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "export:openapi": "tsx scripts/export-openapi.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
@@ -48,6 +49,7 @@
     "supertest": "^7.2.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.52.0",
     "vitest": "^4.0.16"
