@@ -4,15 +4,11 @@
 
   <!-- Status Display -->
   @if (error(); as errorMsg) {
-    <div class="alert alert-danger" role="alert">
-      <strong>Error:</strong> {{ errorMsg }}
-    </div>
+    <div class="alert alert-danger" role="alert"><strong>Error:</strong> {{ errorMsg }}</div>
   }
 
   @if (isLoading()) {
-    <div class="alert alert-info" role="alert">
-      Loading...
-    </div>
+    <div class="alert alert-info" role="alert">Loading...</div>
   }
 
   @if (sessionToken(); as token) {
@@ -61,35 +57,41 @@
         <form [formGroup]="loginForm" (ngSubmit)="login()">
           <div class="mb-3">
             <label for="loginUsername" class="form-label">Username</label>
-            <input 
-              type="text" 
-              class="form-control" 
+            <input
+              type="text"
+              class="form-control"
               id="loginUsername"
-              formControlName="username" 
+              formControlName="username"
               placeholder="admin"
-              [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+              [class.is-invalid]="
+                loginForm.get('username')?.invalid && loginForm.get('username')?.touched
+              "
+            />
             @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
-              <div class="invalid-feedback">
-                Username is required
-              </div>
+              <div class="invalid-feedback">Username is required</div>
             }
           </div>
           <div class="mb-3">
             <label for="loginPassword" class="form-label">Password</label>
-            <input 
-              type="password" 
-              class="form-control" 
+            <input
+              type="password"
+              class="form-control"
               id="loginPassword"
-              formControlName="password" 
+              formControlName="password"
               placeholder="password"
-              [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              [class.is-invalid]="
+                loginForm.get('password')?.invalid && loginForm.get('password')?.touched
+              "
+            />
             @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-              <div class="invalid-feedback">
-                Password is required
-              </div>
+              <div class="invalid-feedback">Password is required</div>
             }
           </div>
-          <button type="submit" class="btn btn-success" [disabled]="isLoading() || loginForm.invalid">
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="isLoading() || loginForm.invalid"
+          >
             Login - POST /api/auth/login
           </button>
         </form>
@@ -112,7 +114,9 @@
       </button>
       @if (islands() && (islands()?.length ?? 0) > 0) {
         <div class="mt-3">
-          <p><strong>Found {{ islands()?.length ?? 0 }} islands:</strong></p>
+          <p>
+            <strong>Found {{ islands()?.length ?? 0 }} islands:</strong>
+          </p>
           <ul class="list-group">
             @for (island of islands() ?? []; track island?.objectId) {
               <li class="list-group-item">
@@ -134,20 +138,23 @@
       <form [formGroup]="islandIdForm" (ngSubmit)="getIslandById()">
         <div class="mb-3">
           <label for="islandId" class="form-label">Island ID</label>
-          <input 
-            type="text" 
-            class="form-control" 
+          <input
+            type="text"
+            class="form-control"
             id="islandId"
-            formControlName="id" 
+            formControlName="id"
             placeholder="Enter island ID"
-            [class.is-invalid]="islandIdForm.get('id')?.invalid && islandIdForm.get('id')?.touched">
+            [class.is-invalid]="islandIdForm.get('id')?.invalid && islandIdForm.get('id')?.touched"
+          />
           @if (islandIdForm.get('id')?.invalid && islandIdForm.get('id')?.touched) {
-            <div class="invalid-feedback">
-              Island ID is required
-            </div>
+            <div class="invalid-feedback">Island ID is required</div>
           }
         </div>
-        <button type="submit" class="btn btn-primary" [disabled]="isLoading() || islandIdForm.invalid">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isLoading() || islandIdForm.invalid"
+        >
           Get Island Details
         </button>
       </form>
@@ -168,38 +175,45 @@
       <form [formGroup]="updateIslandForm" (ngSubmit)="updateIsland()">
         <div class="mb-3">
           <label for="updateIslandId" class="form-label">Island ID</label>
-          <input 
-            type="text" 
-            class="form-control" 
+          <input
+            type="text"
+            class="form-control"
             id="updateIslandId"
-            formControlName="id" 
+            formControlName="id"
             placeholder="Enter island ID"
-            [class.is-invalid]="updateIslandForm.get('id')?.invalid && updateIslandForm.get('id')?.touched">
+            [class.is-invalid]="
+              updateIslandForm.get('id')?.invalid && updateIslandForm.get('id')?.touched
+            "
+          />
           @if (updateIslandForm.get('id')?.invalid && updateIslandForm.get('id')?.touched) {
-            <div class="invalid-feedback">
-              Island ID is required
-            </div>
+            <div class="invalid-feedback">Island ID is required</div>
           }
         </div>
         <div class="mb-3">
           <label for="updateName" class="form-label">Name (optional)</label>
-          <input 
-            type="text" 
-            class="form-control" 
+          <input
+            type="text"
+            class="form-control"
             id="updateName"
-            formControlName="name" 
-            placeholder="New name">
+            formControlName="name"
+            placeholder="New name"
+          />
         </div>
         <div class="mb-3">
           <label for="updateDescription" class="form-label">Description (optional)</label>
-          <textarea 
-            class="form-control" 
+          <textarea
+            class="form-control"
             id="updateDescription"
-            formControlName="description" 
+            formControlName="description"
             placeholder="New description"
-            rows="3"></textarea>
+            rows="3"
+          ></textarea>
         </div>
-        <button type="submit" class="btn btn-warning" [disabled]="isLoading() || !sessionToken() || updateIslandForm.invalid">
+        <button
+          type="submit"
+          class="btn btn-warning"
+          [disabled]="isLoading() || !sessionToken() || updateIslandForm.invalid"
+        >
           Update Island
         </button>
       </form>
@@ -215,28 +229,28 @@
       <form [formGroup]="islandIdForm">
         <div class="mb-3">
           <label for="uploadIslandId" class="form-label">Island ID</label>
-          <input 
-            type="text" 
-            class="form-control" 
+          <input
+            type="text"
+            class="form-control"
             id="uploadIslandId"
-            formControlName="id" 
+            formControlName="id"
             placeholder="Enter island ID"
-            [class.is-invalid]="islandIdForm.get('id')?.invalid && islandIdForm.get('id')?.touched">
+            [class.is-invalid]="islandIdForm.get('id')?.invalid && islandIdForm.get('id')?.touched"
+          />
           @if (islandIdForm.get('id')?.invalid && islandIdForm.get('id')?.touched) {
-            <div class="invalid-feedback">
-              Island ID is required
-            </div>
+            <div class="invalid-feedback">Island ID is required</div>
           }
         </div>
         <div class="mb-3">
           <label for="photoFile" class="form-label">Photo File</label>
-          <input 
-            type="file" 
-            class="form-control" 
+          <input
+            type="file"
+            class="form-control"
             id="photoFile"
-            accept="image/*" 
-            (change)="uploadIslandPhoto($event)" 
-            [disabled]="isLoading() || !sessionToken() || islandIdForm.invalid">
+            accept="image/*"
+            (change)="uploadIslandPhoto($event)"
+            [disabled]="isLoading() || !sessionToken() || islandIdForm.invalid"
+          />
         </div>
       </form>
     </div>
@@ -251,20 +265,25 @@
       <form [formGroup]="searchForm" (ngSubmit)="searchIslands()">
         <div class="mb-3">
           <label for="searchQuery" class="form-label">Search Query</label>
-          <input 
-            type="text" 
-            class="form-control" 
+          <input
+            type="text"
+            class="form-control"
             id="searchQuery"
-            formControlName="query" 
+            formControlName="query"
             placeholder="Enter search term"
-            [class.is-invalid]="searchForm.get('query')?.invalid && searchForm.get('query')?.touched">
+            [class.is-invalid]="
+              searchForm.get('query')?.invalid && searchForm.get('query')?.touched
+            "
+          />
           @if (searchForm.get('query')?.invalid && searchForm.get('query')?.touched) {
-            <div class="invalid-feedback">
-              Search query is required
-            </div>
+            <div class="invalid-feedback">Search query is required</div>
           }
         </div>
-        <button type="submit" class="btn btn-primary" [disabled]="isLoading() || searchForm.invalid">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isLoading() || searchForm.invalid"
+        >
           Search
         </button>
       </form>

@@ -1,14 +1,15 @@
 import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { 
-  authenticationService, 
-  healthService, 
-  islandsService, 
-  apiService, 
-  searchService 
+import {
+  authenticationService,
+  healthService,
+  islandsService,
+  apiService,
+  searchService,
 } from '../../../lib/api/services';
 import type { components } from '../../../lib/api/types';
+import { AuthService } from '../../core/auth/auth.service';
 
 type LoginResponse = components['schemas']['LoginResponse'];
 type IslandListResponse = components['schemas']['IslandListResponse'];
@@ -23,8 +24,11 @@ type SearchResponse = components['schemas']['SearchResponse'];
   styleUrl: './test.css',
 })
 export class Test implements OnInit {
+  // Inject services
+  private readonly authService = inject(AuthService);
+
   // State signals
-  protected readonly sessionToken = signal<string | null>(null);
+  protected readonly sessionToken = this.authService.sessionToken;
   protected readonly isLoading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly islands = signal<IslandListResponse['data']>([]);
@@ -76,15 +80,15 @@ export class Test implements OnInit {
   async checkHealth(): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     try {
       const result = await healthService.checkHealth();
-      
+
       if (result.error) {
         this.error.set(`Health check failed: ${result.error.message}`);
         return;
       }
-      
+
       if (result.data) {
         this.healthStatus.set(result.data);
         console.log('✅ Health check successful:', result.data);
@@ -103,21 +107,23 @@ export class Test implements OnInit {
   async getRootInfo(): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     try {
       const result = await apiService.getRootInfo();
-      
+
       if (result.error) {
         this.error.set(`Root endpoint error: ${result.error.message}`);
         return;
       }
-      
+
       if (result.data) {
         this.rootInfo.set(result.data);
         console.log('✅ Root info:', result.data);
       }
     } catch (err) {
-      this.error.set(`Root endpoint error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      this.error.set(
+        `Root endpoint error: ${err instanceof Error ? err.message : 'Unknown error'}`
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -136,30 +142,31 @@ export class Test implements OnInit {
 
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     try {
       const formValue = this.loginForm.value;
       const result = await authenticationService.login({
         username: formValue.username,
         password: formValue.password,
       });
-      
+
       if (result.error) {
         this.error.set(`Login failed: ${result.error.message}`);
         return;
       }
-      
-      if (result.data && typeof result.data === 'object' && result.data !== null && 'sessionToken' in result.data) {
+
+      if (
+        result.data &&
+        typeof result.data === 'object' &&
+        result.data !== null &&
+        'sessionToken' in result.data
+      ) {
         const loginData = result.data as LoginResponse;
         const token = loginData.sessionToken || null;
-        this.sessionToken.set(token);
-        
-        // Set auth token on all services that need it
-        if (token) {
-          authenticationService.setAuthToken(token);
-          islandsService.setAuthToken(token);
-        }
-        
+
+        // Set token using auth service (handles storage and service configuration)
+        this.authService.setToken(token);
+
         console.log('✅ Login successful:', loginData.user);
         // Reset login form after successful login
         this.loginForm.reset();
@@ -184,23 +191,21 @@ export class Test implements OnInit {
 
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     try {
       const result = await authenticationService.logout();
-      
+
       if (result.error) {
         this.error.set(`Logout failed: ${result.error.message}`);
         return;
       }
-      
+
       if (result.data) {
         console.log('✅ Logout successful');
-        this.sessionToken.set(null);
-        
-        // Clear auth tokens from all services
-        authenticationService.clearAuthToken();
-        islandsService.clearAuthToken();
-        
+
+        // Clear token using auth service (handles storage and service configuration)
+        this.authService.clearToken();
+
         // Reset forms
         this.updateIslandForm.reset();
       }
@@ -218,16 +223,21 @@ export class Test implements OnInit {
   async getAllIslands(): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     try {
       const result = await islandsService.getAllIsland();
-      
+
       if (result.error) {
         this.error.set(`Failed to fetch islands: ${result.error.message}`);
         return;
       }
-      
-      if (result.data && typeof result.data === 'object' && result.data !== null && 'data' in result.data) {
+
+      if (
+        result.data &&
+        typeof result.data === 'object' &&
+        result.data !== null &&
+        'data' in result.data
+      ) {
         const islandsData = result.data as IslandListResponse;
         this.islands.set(islandsData.data || []);
         console.log(`✅ Fetched ${islandsData.data?.length || 0} islands`);
@@ -252,17 +262,22 @@ export class Test implements OnInit {
 
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     try {
       const islandId = this.islandIdForm.value.id;
       const result = await islandsService.getByIdIsland(islandId);
-      
+
       if (result.error) {
         this.error.set(`Failed to fetch island: ${result.error.message}`);
         return;
       }
-      
-      if (result.data && typeof result.data === 'object' && result.data !== null && 'data' in result.data) {
+
+      if (
+        result.data &&
+        typeof result.data === 'object' &&
+        result.data !== null &&
+        'data' in result.data
+      ) {
         const islandData = result.data as IslandDetailResponse;
         this.selectedIsland.set(islandData.data || null);
         console.log('✅ Island fetched:', islandData.data?.name);
@@ -293,11 +308,11 @@ export class Test implements OnInit {
 
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     try {
       const formValue = this.updateIslandForm.value;
       const updates: UpdateIslandRequest = {};
-      
+
       if (formValue.name) {
         updates.name = formValue.name;
       }
@@ -312,12 +327,12 @@ export class Test implements OnInit {
       }
 
       const result = await islandsService.updateIsland(formValue.id, updates);
-      
+
       if (result.error) {
         this.error.set(`Failed to update island: ${result.error.message}`);
         return;
       }
-      
+
       if (result.data) {
         console.log('✅ Island updated successfully');
         // Refresh the island data
@@ -325,7 +340,9 @@ export class Test implements OnInit {
         await this.getIslandById();
       }
     } catch (err) {
-      this.error.set(`Update island error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      this.error.set(
+        `Update island error: ${err instanceof Error ? err.message : 'Unknown error'}`
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -358,16 +375,21 @@ export class Test implements OnInit {
     const islandId = this.islandIdForm.value.id;
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     try {
       const result = await islandsService.uploadPhotoIsland(islandId, photoFile);
-      
+
       if (result.error) {
         this.error.set(`Failed to upload photo: ${result.error.message}`);
         return;
       }
-      
-      if (result.data && typeof result.data === 'object' && result.data !== null && 'photoUrl' in result.data) {
+
+      if (
+        result.data &&
+        typeof result.data === 'object' &&
+        result.data !== null &&
+        'photoUrl' in result.data
+      ) {
         console.log('✅ Photo uploaded:', (result.data as { photoUrl?: string }).photoUrl);
         // Refresh the island data to see the new photo
         await this.getIslandById();
@@ -392,17 +414,22 @@ export class Test implements OnInit {
 
     this.isLoading.set(true);
     this.error.set(null);
-    
+
     try {
       const query = this.searchForm.value.query;
       const result = await searchService.searchIslands({ q: query });
-      
+
       if (result.error) {
         this.error.set(`Search failed: ${result.error.message}`);
         return;
       }
-      
-      if (result.data && typeof result.data === 'object' && result.data !== null && 'data' in result.data) {
+
+      if (
+        result.data &&
+        typeof result.data === 'object' &&
+        result.data !== null &&
+        'data' in result.data
+      ) {
         const searchData = result.data as SearchResponse;
         this.searchResults.set(searchData.data || []);
         console.log(`✅ Found ${searchData.count || 0} results for "${query}"`);

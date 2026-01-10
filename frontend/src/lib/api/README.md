@@ -18,11 +18,13 @@ npm run generate:services
 ```
 
 Or use the combined command from the frontend (generates both types and services):
+
 ```bash
 npm run api:generate
 ```
 
 This command will:
+
 1. Export the OpenAPI spec from the backend
 2. Generate TypeScript types (`types.ts`)
 3. Generate API client (`client.ts`)
@@ -45,11 +47,7 @@ This command will:
 The service classes provide a clean, type-safe API with automatic authentication handling:
 
 ```typescript
-import { 
-  authenticationService, 
-  islandsService, 
-  searchService 
-} from './lib/api/services';
+import { authenticationService, islandsService, searchService } from './lib/api/services';
 
 // Login
 const result = await authenticationService.login({
