@@ -1,0 +1,49 @@
+.typing-container {
+  min-height: 1.2em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  padding: 0.5rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.typing-text {
+  display: inline;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.typing-cursor {
+  animation: blink 1s infinite;
+  margin-left: 2px;
+  display: inline;
+  vertical-align: baseline;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .typing-container {
+    padding: 0.25rem;
+    font-size: clamp(1rem, 4vw, 1.5rem);
+  }
+  
+  .typing-cursor {
+    margin-left: 1px;
+  }
+}
+
+@media (max-width: 576px) {
+  .typing-container {
+    padding: 0.25rem 0.5rem;
+    line-height: 1.4;
+  }
+}

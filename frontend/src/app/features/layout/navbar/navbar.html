@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand glass-navbar" style="height: 60px">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" [routerLink]="[routes.HOME]">
       <img
         src="/logo.png"
         alt="Travel Blog Logo"
@@ -8,9 +8,9 @@
       />
     </a>
     <div class="navbar-nav flex flex-row gap-3">
-      <a class="nav-link" href="#">Home</a>
-      <a class="nav-link" href="#">Islands</a>
-      <a class="nav-link" href="#">About</a>
+      <a class="nav-link" [routerLink]="[routes.HOME]">Home</a>
+      <a class="nav-link" [routerLink]="[routes.ISLANDS]">Islands</a>
+      <a class="nav-link" [routerLink]="[routes.ABOUT]">About</a>
     </div>
     <div class="ms-auto">
       <app-theme-toggle />

@@ -3,12 +3,18 @@ import { Home } from './features/home/home';
 import { IslandDetails } from './features/island-details/island-details';
 import { Admin } from './features/admin/admin';
 import { Test } from './features/test/test';
+import { About } from './features/about/about';
 
 export const routes: Routes = [
   {
     path: '',
     component: Home,
     title: 'Home - Travel Blog',
+  },
+  {
+    path: 'about',
+    component: About,
+    title: 'About - Travel Blog',
   },
   {
     path: 'admin',

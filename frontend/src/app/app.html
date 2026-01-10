@@ -1,6 +1,11 @@
+@if (!isAdminRoute()) {
 <div class="position-absolute w-100">
   <app-navbar />
 </div>
-<div class="bg-dark">
+}
+<div class="min-vh-100 w-full">
+  @if (!isHomeRoute() && !isAdminRoute()) {
+    <div style="height: 100px; width: 100%;"></div>
+  }
   <router-outlet />
 </div>
