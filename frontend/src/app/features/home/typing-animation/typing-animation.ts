@@ -23,7 +23,7 @@ export class TypingAnimation implements OnInit, OnDestroy {
   ];
 
   @Input() phrases: string[] = this.defaultPhrases;
-  @Input() typingSpeed = 100; // milliseconds per character
+  @Input() typingSpeed = 80; // milliseconds per character
   @Input() deletingSpeed = 50; // milliseconds per character (faster when deleting)
   @Input() pauseBeforeDelete = 2000; // pause before starting to delete (2 seconds)
   @Input() pauseBeforeRetype = 500; // pause before retyping (0.5 seconds)

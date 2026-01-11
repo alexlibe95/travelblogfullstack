@@ -1,19 +1,52 @@
-<nav class="navbar navbar-expand glass-navbar" style="height: 60px">
+<nav class="navbar navbar-expand-md glass-navbar p-0 m-0" style="max-height: 60px">
   <div class="container-fluid">
-    <a class="navbar-brand" [routerLink]="[routes.HOME]">
+    <a class="navbar-brand" [routerLink]="[routes.HOME]" (click)="closeMenu()">
       <img
         src="/logo.png"
         alt="Travel Blog Logo"
-        style="height: 120px; width: auto; margin-bottom: -60px; z-index: 1000"
+        style="height: 120px; width: auto; margin-bottom: -60px; z-index: 1000;"
       />
     </a>
-    <div class="navbar-nav flex flex-row gap-3">
-      <a class="nav-link" [routerLink]="[routes.HOME]">Home</a>
-      <a class="nav-link" [routerLink]="[routes.ISLANDS]">Islands</a>
-      <a class="nav-link" [routerLink]="[routes.ABOUT]">About</a>
-    </div>
-    <div class="ms-auto">
-      <app-theme-toggle />
-    </div>
+    <ul class="navbar-nav navbar-expand d-none d-md-flex ms-md-auto flex-row gap-3 align-items-center ">
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="[routes.HOME]">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="[routes.ISLANDS]">Islands</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="[routes.ABOUT]">About</a>
+      </li>
+      <li class="nav-item">
+        <app-theme-toggle />
+      </li>
+    </ul>
+    <li class="nav-item dropdown d-md-none">
+      <a
+        class="nav-link dropdown-toggle"
+        href="#"
+        role="button"
+        (click)="toggleMenu(); $event.preventDefault()"
+        [attr.aria-expanded]="isMenuOpen()"
+      >
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" [class.show]="isMenuOpen()">
+        <li>
+          <a class="dropdown-item" [routerLink]="[routes.HOME]" (click)="closeMenu()">Home</a>
+        </li>
+        <li>
+          <a class="dropdown-item" [routerLink]="[routes.ISLANDS]" (click)="closeMenu()">Islands</a>
+        </li>
+        <li>
+          <a class="dropdown-item" [routerLink]="[routes.ABOUT]" (click)="closeMenu()">About</a>
+        </li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+          <div class="dropdown-item">
+            <app-theme-toggle />
+          </div>
+        </li>
+      </ul>
+    </li>
   </div>
 </nav>
